@@ -1,45 +1,34 @@
 package com.okta.examples.adapter.dto.request;
 
-import com.google.gson.Gson;
-
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class RegisterRequest {
 
-    private String id;
+    private String idUser;
 
-    @NotBlank
-    @Size(min = 3, max = 20)
-    //@Email
-    @Pattern(regexp="^[\\w!#$%&’+/=?`{|}~^-]+(?:\\.[\\w!#$%&’+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$",message="Not valid email pattern")
+//    @NotBlank
+//    @Size(min = 3, max = 20)
+//    //@Email
+//    @Pattern(regexp="^[\\w!#$%&’+/=?`{|}~^-]+(?:\\.[\\w!#$%&’+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$",message="Not valid email pattern")
     private String email;
 
-    @NotBlank
-    @Size(max = 10)
+//    @NotBlank
+//    @Size(max = 10)
     private String first_name;
 
     private String last_name;
 
-    @NotBlank
-    @Size(min = 3, max = 20)
-    @Pattern(regexp="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=\\S+$).{8,}$",message="Not valid password pattern")
+//    @NotBlank
+//    @Size(min = 3, max = 20)
+//    @Pattern(regexp="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=\\S+$).{8,}$",message="Not valid password pattern")
     private String password;
 
     @NotBlank
     @Size(min = 3, max = 20)
     private String confirmPassword;
 
-    private String telephone;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+    private String phoneNumber;
 
     public String getEmail() {
         return email;
@@ -81,17 +70,19 @@ public class RegisterRequest {
         this.confirmPassword = confirmPassword;
     }
 
-    public String getTelephone() {
-        return telephone;
+    public String getIdUser() {
+        return idUser;
     }
 
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setIdUser(String idUser) {
+        this.idUser = idUser;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-    public String toJsonString(){
-        Gson gson = new Gson();
-        return gson.toJson(this);
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

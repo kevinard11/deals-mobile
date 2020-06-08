@@ -1,111 +1,129 @@
 package com.okta.examples.controller;
 
-import com.okta.examples.adapter.dto.wrapper.ResponseFailed;
-import com.okta.examples.adapter.dto.wrapper.ResponseSuccess;
-import com.okta.examples.service.MemberDomain;
-import com.okta.examples.service.OrderDomain;
-import com.okta.examples.service.VoucherDomain;
+import com.okta.examples.adapter.dto.request.EditProfileRequest;
+import com.okta.examples.service.usecase.TransactionService;
+import com.okta.examples.service.usecase.UserService;
+import com.okta.examples.service.usecase.VoucherService;
+import com.okta.examples.service.validation.SessionValidation;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
+@RequestMapping(value = "/api/user")
 public class UserController {
 
     @Autowired
-    MemberDomain member;
+    UserService userService;
 
     @Autowired
-    VoucherDomain voucher;
+    TransactionService transactionService;
 
     @Autowired
-    OrderDomain order;
+    VoucherService voucherService;
 
-    @GetMapping(value = "/user/{idUser}")
-    public ResponseEntity<?> getProfile(@PathVariable("idUser") String idUser) throws ParseException {
+    @Autowired
+    SessionValidation sessionValidation;
 
-        ResponseEntity<?> fromMember = member.getProfile(idUser);
-
-        JSONParser parser = new JSONParser();
-        JSONObject jsonUser = (JSONObject) parser.parse(fromMember.getBody().toString());
-
-        return new ResponseEntity<>(ResponseSuccess.wrap200(jsonUser, "success", "/user"+idUser),
-                                HttpStatus.OK);
+    @PostMapping(value = "/{idUser}")
+    public ResponseEntity<?> welcome(@PathVariable("idUser") String idUser,
+                                     HttpServletRequest request){
+        sessionValidation.request(idUser, request);
+        return new ResponseEntity<>("Welcome. Your session id : "+idUser, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/user/{idUser}/transaction/voucher")
-    public ResponseEntity<?> placeOrderVoucher(@PathVariable("idUser") String idUser
-                    , @RequestBody JSONObject data) throws ParseException {
-
-        System.out.println("Send data to order domain : "+ data.toJSONString());
-        ResponseEntity<?> fromOrder = order.placeOrderVoucher(idUser, data);
-        System.out.println("Receive data from order domain :"+ fromOrder.getBody().toString());
-
-        JSONParser parser = new JSONParser();
-        JSONObject jsonOrder = (JSONObject) parser.parse(fromOrder.getBody().toString());
-
-        String message = ""+jsonOrder.get("message");
-
-        if (message == null) {
-            return new ResponseEntity<>(ResponseSuccess.wrap200(jsonOrder, message
-                    , "/user" + idUser+"/transaction/voucher"),
-                    HttpStatus.OK);
-        }
-        else {
-           return new ResponseEntity<>(ResponseFailed.wrap400( null, message,
-                   "/user" + idUser+"/transaction/voucher"), HttpStatus.BAD_REQUEST) ;
-        }
+    @GetMapping(value = "/{id_user}")
+    public ResponseEntity<?> getProfile(@PathVariable("id_user") String idUser,
+                                        HttpServletRequest request){
+        sessionValidation.request(idUser, request);
+        return new ResponseEntity<>(userService.getProfile(idUser), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/user/{idUser}/transaction/{idTransaction}/voucher")
-    public ResponseEntity<?> paymentOrderVoucher(@PathVariable("idUser") String idUser
-                                                 , @PathVariable("idTransaction") String idTransaction
-                    , @RequestBody JSONObject data) throws ParseException {
-
-        System.out.println("Send data to order domain : "+ data.toJSONString());
-        ResponseEntity<?> fromOrder = order.paymentOrderVoucher(idUser, idTransaction, data);
-        System.out.println("Receive data from order domain :"+ fromOrder.getBody().toString());
-
-        JSONParser parser = new JSONParser();
-        JSONObject jsonOrder = (JSONObject) parser.parse(fromOrder.getBody().toString());
-
-        String message = ""+jsonOrder.get("message");
-
-        if (message == null) {
-            return new ResponseEntity<>(ResponseSuccess.wrap200(jsonOrder, message
-                    , "/user" + idUser+"/transaction/voucher"),
-                    HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(ResponseFailed.wrap400( null, message,
-                    "/user" + idUser+"/transaction/voucher"), HttpStatus.BAD_REQUEST) ;
-        }
+    @PutMapping(value = "/{idUser}")
+    public ResponseEntity<?> editProfile(@PathVariable("idUser") String idUser,
+                                         @RequestBody EditProfileRequest editProfileRequest,
+                                         HttpServletRequest request){
+        //sessionValidation.request(idUser, request);
+        return new ResponseEntity<>(userService.editProfile(idUser, editProfileRequest), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/checkToken")
-    public ResponseEntity<?> checkToken( @RequestBody JSONObject data) throws ParseException {
-
-        System.out.println("Send data to order domain : "+ data.toJSONString());
-        ResponseEntity<?> fromOrder = member.checkToken();
-        System.out.println("Receive data from order domain :"+ fromOrder.getBody().toString());
-
-        JSONParser parser = new JSONParser();
-        JSONObject jsonOrder = new JSONObject();
-
-        String message = ""+jsonOrder.get("message");
-        System.out.println(message);
-        if (jsonOrder.get("message") == null) {
-            return new ResponseEntity<>(ResponseSuccess.wrap200(jsonOrder, fromOrder.getBody().toString()
-                    , "/checkToken"),
-                    HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(ResponseFailed.wrap400( null, message,
-                    "/checkToken"), HttpStatus.BAD_REQUEST) ;
-        }
+    @PostMapping(value= "/{idUser}/transaction/voucher")
+    public ResponseEntity<?> createOrderVoucher(@PathVariable("idUser") String idUser,
+                                                @RequestParam JSONObject data,
+                                                HttpServletRequest request){
+        sessionValidation.request(idUser, request);
+        return new ResponseEntity<>(transactionService.createOrderVoucher(idUser, data), HttpStatus.CREATED);
     }
+
+    @PutMapping(value = "/{idUser}/transaction/voucher")
+    public ResponseEntity<?> payOrderVoucher(@PathVariable("idUser") String idUser,
+                                             @RequestParam JSONObject data,
+                                             HttpServletRequest request){
+        sessionValidation.request(idUser, request);
+        return new ResponseEntity<>(transactionService.payOrderVoucher(idUser, data), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/{idUser}/transaction/topup")
+    public ResponseEntity<?> payTopup(@PathVariable("idUser") String idUser,
+                                      @RequestParam JSONObject data,
+                                      HttpServletRequest request){
+        sessionValidation.request(idUser, request);
+        return new ResponseEntity<>(transactionService.payTopup(idUser, data), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{idUser}/transaction")
+    public ResponseEntity<?> transactionHistory(@PathVariable("idUser") String idUser,
+                                                @RequestParam("category") String category,
+                                                @RequestParam("filter-start-date") String filterStart,
+                                                @RequestParam("filter-end-date") String filterEnd,
+                                                @RequestParam("page") String page,
+                                                HttpServletRequest request){
+        sessionValidation.request(idUser, request);
+        return new ResponseEntity<>(transactionService.transactionHistory(idUser, category, filterStart, filterEnd, page),
+                                    HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{idUser}/transaction/{idTransaction}")
+    public ResponseEntity<?> transactionDetail(@PathVariable("idUser") String idUser,
+                                               @PathVariable("idTransaction") String idTransaction,
+                                               HttpServletRequest request){
+        sessionValidation.request(idUser, request);
+        return new ResponseEntity<>(transactionService.transactionDetail(idUser, idTransaction),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/show-all-voucher")
+    public ResponseEntity<?> getAllVoucher(@RequestParam("page") String page) {
+        return new ResponseEntity<>(voucherService.getAllVoucher(page), HttpStatus.OK);
+    }
+
+    @GetMapping("/filter-voucher")
+    public ResponseEntity<?> filterVoucher(@RequestParam("merchantCategory") String merchantCategory,
+                                          @RequestParam("page") String page){
+        return new ResponseEntity<>(voucherService.filterVoucher(merchantCategory, page), HttpStatus.OK);
+    }
+
+    @GetMapping("/findByMerchantName-voucher")
+    public ResponseEntity<?> searchVoucher(@RequestParam("merchantName") String merchantName,
+                                          @RequestParam("page") String page){
+        return new ResponseEntity<>(voucherService.searchVoucher(merchantName, page), HttpStatus.OK);
+    }
+
+    @GetMapping("/sort-voucher")
+    public ResponseEntity<?> sortVoucher(@RequestParam("sortBy") String name,
+                                         @RequestParam("page") String page){
+        return new ResponseEntity<>(voucherService.sortVoucher(name, page), HttpStatus.OK);
+    }
+
+    @PostMapping("/{idUser}/logout")
+    public ResponseEntity<?> logout(@PathVariable("idUser") String idUser,
+                                    HttpServletRequest request){
+        sessionValidation.request(idUser, request);
+        return new ResponseEntity<>(userService.logout(idUser), HttpStatus.OK);
+    }
+
 }

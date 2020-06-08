@@ -33,11 +33,11 @@ public class UserUsecase {
         return UUID.randomUUID().toString();
     }
 
-    public String encryptPassword(String password){
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        return passwordEncoder.encode(password);
-    }
-
+//    public String encryptPassword(String password){
+//        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//        return passwordEncoder.encode(password);
+//    }
+//
     public boolean matchPassword(String password, String encryptPassword){
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder.matches(password, encryptPassword);

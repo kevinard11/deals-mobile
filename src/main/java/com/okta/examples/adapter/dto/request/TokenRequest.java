@@ -20,4 +20,5 @@ public class TokenRequest {
     public void setToken(String token) {
         this.token = token;
     }
+
 }

@@ -1,4 +1,4 @@
-package com.okta.examples.adapter.dto.wrapper;
+package com.okta.examples.adapter.wrapper;
 
 import com.okta.examples.adapter.clock.Timestamps;
 import org.json.simple.JSONObject;

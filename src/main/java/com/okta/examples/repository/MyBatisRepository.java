@@ -3,7 +3,9 @@ package com.okta.examples.repository;
 import com.okta.examples.adapter.dto.request.RegisterRequest;
 import com.okta.examples.model.User;
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface MyBatisRepository {
 
     final String login = "select * from users where email = #{email} and password = #{password}";
@@ -29,7 +31,7 @@ public interface MyBatisRepository {
     User findByTelephone(@Param("telephone") String telephone);
 
     final String register = "INSERT INTO users (id, email, telephone, first_name, last_name, password)" +
-                            " VALUES( #{id}, #{email}, #{telephone}, #{first_name}, #{last_name}, #{password}) ";
+                            " VALUES( #{id}, #{email}, #{phoneNumber}, #{first_name}, #{last_name}, #{password}) ";
     @Insert(register)
     void register(RegisterRequest registerRequest);
 
@@ -68,4 +70,21 @@ public interface MyBatisRepository {
     final String logoutToken = "UPDATE tokens set is_valid = 0 where id = {id} and token = #{token}";
     @Update(logoutToken)
     void logoutToken (@Param("id") String id, @Param("token") String token);
+
+    final String startSession = "INSERT session(id_user, id_session, created_at, valid_date, status) " +
+                                "values(#{idUser}, #{idSession}, now(), date_add(now(), interval 7 day), 1)";
+    @Insert(startSession)
+    void startSession(@Param("idUser") String idUser, @Param("idSession") String idSession);
+
+    final String checkSession = "SELECT id_session from session where id_user = #{idUser} and valid_date > now() " +
+                                "and status = 1";
+    @Select(checkSession)
+    @Results(value = {
+            @Result(property = "idSession", column = "id_session")
+    })
+    String checkSession(@Param("idUser") String idUser);
+
+    final String destroySession = "UPDATE session set status = 0 where id_user = #{idUser}";
+    @Update(destroySession)
+    void destroySession(@Param("idUser") String idUser);
 }
