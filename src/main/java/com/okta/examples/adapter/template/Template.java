@@ -28,6 +28,7 @@ public class Template {
 
     public ResponseEntity<?> post(String api, Object data){
         ResponseEntity<?> result = null;
+        System.out.println(api);
         try {
             //result= restTemplate.postForEntity(api, data, JSONObject.class);
             HttpEntity entity = new HttpEntity(data);
@@ -44,6 +45,7 @@ public class Template {
 
     public ResponseEntity<?> get(String api){
         ResponseEntity<?> result = null;
+        System.out.println(api);
         try {
             result= restTemplate.getForEntity(api, JSONObject.class);
         }
@@ -58,6 +60,7 @@ public class Template {
 
     public ResponseEntity<?> put(String api, Object data){
         ResponseEntity<?> result = null;
+        System.out.println(api);
         try {
             HttpEntity entity = new HttpEntity(data);
             result = restTemplate.exchange(api, HttpMethod.PUT,  entity, JSONObject.class);

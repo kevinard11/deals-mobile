@@ -27,6 +27,10 @@ public class VoucherDomain {
                 "?page=" +page);
     }
 
+    public ResponseEntity<?> voucherDetail(String idVoucher){
+        return template.get(api+"/admin/voucher-detail-voucher/"+idVoucher);
+    }
+
     public ResponseEntity<?> filterVoucher(String merchantCategory, String page){
         return template.get(api+"/user/filter-voucher" +
                 "?merchantCategory=" +merchantCategory+"&" +
@@ -45,7 +49,31 @@ public class VoucherDomain {
                 "page=" +page);
     }
 
+
     public ResponseEntity<?> createMerchant(String idUser, String idMerchant, CreateMerchant createMerchant){
-        return template.post(api+"/admin/"+idUser+"/merchant/"+idMerchant+"/voucher", createMerchant);
+        return template.post(api+"/admin/"+idUser+"/merchant/"+idMerchant+"/vouchers", createMerchant);
+    }
+
+    public ResponseEntity<?> getAllVoucherAdmin(String page){
+        return template.get(api+"/admin/show-all-voucher" +
+                "?page=" +page);
+    }
+
+    public ResponseEntity<?> filterVoucherAdmin(String merchantCategory, String page){
+        return template.get(api+"/admin/filter-voucher" +
+                "?merchantCategory=" +merchantCategory+"&" +
+                "page=" +page);
+    }
+
+    public ResponseEntity<?> searchVoucherAdmin(String merchantName, String page){
+        return template.get(api+"/admin/findByMerchantName-voucher" +
+                "?merchantName=" +merchantName+"&" +
+                "page=" +page);
+    }
+
+    public ResponseEntity<?> sortVoucherAdmin(String name, String page){
+        return template.get(api+"/admin/sort-voucher" +
+                "?sortBy=" +name+"&" +
+                "page=" +page);
     }
 }

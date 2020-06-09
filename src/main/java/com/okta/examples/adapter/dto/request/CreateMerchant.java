@@ -1,7 +1,5 @@
 package com.okta.examples.adapter.dto.request;
 
-import java.util.Date;
-
 public class CreateMerchant {
 
     private String voucherName;
@@ -9,7 +7,7 @@ public class CreateMerchant {
     private Double discount;
     private Double maxDiscount;
     private Integer quota;
-    private Date date;
+    private String expiredDate;
     private Boolean status;
 
     public String getVoucherName() {
@@ -52,12 +50,12 @@ public class CreateMerchant {
         this.quota = quota;
     }
 
-    public Date getDate() {
-        return date;
+    public String getExpiredDate() {
+        return expiredDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setExpiredDate(String expiredDate) {
+        this.expiredDate = expiredDate;
     }
 
     public Boolean getStatus() {

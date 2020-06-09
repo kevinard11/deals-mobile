@@ -47,13 +47,13 @@ public class UserController {
     public ResponseEntity<?> editProfile(@PathVariable("idUser") String idUser,
                                          @RequestBody EditProfileRequest editProfileRequest,
                                          HttpServletRequest request){
-        //sessionValidation.request(idUser, request);
+        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(userService.editProfile(idUser, editProfileRequest), HttpStatus.OK);
     }
 
-    @PostMapping(value= "/{idUser}/transaction/voucher")
-    public ResponseEntity<?> createOrderVoucher(@PathVariable("idUser") String idUser,
-                                                @RequestParam JSONObject data,
+    @PostMapping(value= "/{id_user}/transaction/voucher")
+    public ResponseEntity<?> createOrderVoucher(@PathVariable("id_user") String idUser,
+                                                @RequestBody JSONObject data,
                                                 HttpServletRequest request){
         sessionValidation.request(idUser, request);
         return new ResponseEntity<>(transactionService.createOrderVoucher(idUser, data), HttpStatus.CREATED);
@@ -61,7 +61,7 @@ public class UserController {
 
     @PutMapping(value = "/{idUser}/transaction/voucher")
     public ResponseEntity<?> payOrderVoucher(@PathVariable("idUser") String idUser,
-                                             @RequestParam JSONObject data,
+                                             @RequestBody JSONObject data,
                                              HttpServletRequest request){
         sessionValidation.request(idUser, request);
         return new ResponseEntity<>(transactionService.payOrderVoucher(idUser, data), HttpStatus.OK);
@@ -69,9 +69,9 @@ public class UserController {
 
     @PostMapping(value = "/{idUser}/transaction/topup")
     public ResponseEntity<?> payTopup(@PathVariable("idUser") String idUser,
-                                      @RequestParam JSONObject data,
+                                      @RequestBody JSONObject data,
                                       HttpServletRequest request){
-        sessionValidation.request(idUser, request);
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(transactionService.payTopup(idUser, data), HttpStatus.OK);
     }
 
@@ -96,33 +96,45 @@ public class UserController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/show-all-voucher")
-    public ResponseEntity<?> getAllVoucher(@RequestParam("page") String page) {
+    @GetMapping("/{idUser}/show-all-voucher")
+    public ResponseEntity<?> getAllVoucher(@PathVariable("idUser") String idUser,
+                                           @RequestParam("page") String page,
+                                           HttpServletRequest request) {
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(voucherService.getAllVoucher(page), HttpStatus.OK);
     }
 
-    @GetMapping("/filter-voucher")
-    public ResponseEntity<?> filterVoucher(@RequestParam("merchantCategory") String merchantCategory,
-                                          @RequestParam("page") String page){
+    @GetMapping("/{idUser}/filter-voucher")
+    public ResponseEntity<?> filterVoucher(@PathVariable("idUser") String idUser,
+                                           @RequestParam("merchantCategory") String merchantCategory,
+                                           @RequestParam("page") String page,
+                                           HttpServletRequest request){
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(voucherService.filterVoucher(merchantCategory, page), HttpStatus.OK);
     }
 
-    @GetMapping("/findByMerchantName-voucher")
-    public ResponseEntity<?> searchVoucher(@RequestParam("merchantName") String merchantName,
-                                          @RequestParam("page") String page){
+    @GetMapping("/{idUser}/findByMerchantName-voucher")
+    public ResponseEntity<?> searchVoucher(@PathVariable("idUser") String idUser,
+                                           @RequestParam("merchantName") String merchantName,
+                                           @RequestParam("page") String page,
+                                           HttpServletRequest request){
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(voucherService.searchVoucher(merchantName, page), HttpStatus.OK);
     }
 
-    @GetMapping("/sort-voucher")
-    public ResponseEntity<?> sortVoucher(@RequestParam("sortBy") String name,
-                                         @RequestParam("page") String page){
+    @GetMapping("/{idUser}/sort-voucher")
+    public ResponseEntity<?> sortVoucher(@PathVariable("idUser") String idUser,
+                                         @RequestParam("sortBy") String name,
+                                         @RequestParam("page") String page,
+                                         HttpServletRequest request){
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(voucherService.sortVoucher(name, page), HttpStatus.OK);
     }
 
     @PostMapping("/{idUser}/logout")
     public ResponseEntity<?> logout(@PathVariable("idUser") String idUser,
                                     HttpServletRequest request){
-        sessionValidation.request(idUser, request);
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(userService.logout(idUser), HttpStatus.OK);
     }
 

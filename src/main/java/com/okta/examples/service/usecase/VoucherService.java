@@ -1,11 +1,11 @@
 package com.okta.examples.service.usecase;
 
+import com.okta.examples.adapter.exception.MatchOtpException;
 import com.okta.examples.adapter.wrapper.Parser;
 import com.okta.examples.adapter.wrapper.ResponseSuccess;
-import com.okta.examples.service.microservice.MemberDomain;
 import com.okta.examples.service.microservice.VoucherDomain;
-import com.okta.examples.adapter.exception.MatchOtpException;
 import com.okta.examples.service.validation.VoucherValidation;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +13,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class VoucherService {
-
-    @Autowired
-    MemberDomain member;
 
     @Autowired
     VoucherDomain voucher;
@@ -35,10 +32,10 @@ public class VoucherService {
             throw new MatchOtpException(message, fromVoucher.getStatusCode());
         }
 
-        JSONObject voucher = (JSONObject) jsonVoucher.get("data");
+        JSONArray voucher = (JSONArray) jsonVoucher.get("data");
 
-        return ResponseSuccess.wrap200(voucher, "Transaction history are successfully collected",
-                "/api/user/show-all-transaction");
+        return ResponseSuccess.wrap200(voucher, "Success.",
+                "/api/user/show-all-voucher");
     }
 
     public JSONObject filterVoucher(String merchantCategory, String page){
@@ -53,16 +50,16 @@ public class VoucherService {
             throw new MatchOtpException(message, fromVoucher.getStatusCode());
         }
 
-        JSONObject voucher = (JSONObject) jsonVoucher.get("data");
+        JSONArray voucher = (JSONArray) jsonVoucher.get("data");
 
-        return ResponseSuccess.wrap200(voucher, "Success",
+        return ResponseSuccess.wrap200(voucher, "Success.",
                 "/api/user/filter-voucher");
     }
 
     public JSONObject searchVoucher(String merchantName, String page){
 
         ResponseEntity<?> fromVoucher = voucher.searchVoucher(merchantName, page);
-        System.out.println("Filter Voucher. Receive data from voucher domain :"+ fromVoucher.getBody().toString());
+        System.out.println("Search Voucher. Receive data from voucher domain :"+ fromVoucher.getBody().toString());
 
         JSONObject jsonVoucher = Parser.parseJSON(fromVoucher.getBody().toString());
         String message = ""+ jsonVoucher.get("message");
@@ -71,16 +68,16 @@ public class VoucherService {
             throw new MatchOtpException(message, fromVoucher.getStatusCode());
         }
 
-        JSONObject voucher = (JSONObject) jsonVoucher.get("data");
+        JSONArray voucher = (JSONArray) jsonVoucher.get("data");
 
-        return ResponseSuccess.wrap200(voucher, "Success",
+        return ResponseSuccess.wrap200(voucher, "Success.",
                 "/api/user/findByMerchantName-voucher");
     }
 
     public JSONObject sortVoucher(String name, String page){
 
         ResponseEntity<?> fromVoucher = voucher.sortVoucher(name, page);
-        System.out.println("Filter Voucher. Receive data from voucher domain :"+ fromVoucher.getBody().toString());
+        System.out.println("Sort Voucher. Receive data from voucher domain :"+ fromVoucher.getBody().toString());
 
         JSONObject jsonVoucher = Parser.parseJSON(fromVoucher.getBody().toString());
         String message = ""+ jsonVoucher.get("message");
@@ -89,9 +86,9 @@ public class VoucherService {
             throw new MatchOtpException(message, fromVoucher.getStatusCode());
         }
 
-        JSONObject voucher = (JSONObject) jsonVoucher.get("data");
+        JSONArray voucher = (JSONArray) jsonVoucher.get("data");
 
-        return ResponseSuccess.wrap200(voucher, "Success",
+        return ResponseSuccess.wrap200(voucher, "Success.",
                 "/api/user/findByMerchantName-voucher");
     }
 }

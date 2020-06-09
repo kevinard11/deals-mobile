@@ -21,7 +21,7 @@ public class AuthenticationValidation {
 
     public void register(RegisterRequest registerRequest){
 
-        if (registerRequest.getEmail()==null || registerRequest.getPhoneNumber() == null ||
+        if (registerRequest.getEmail() == null || registerRequest.getPhoneNumber() == null ||
             registerRequest.getPassword()== null || registerRequest.getFirst_name() == null ||
             registerRequest.getConfirmPassword() == null){
             throw new RegisterException("Please fill in all the forms.", HttpStatus.BAD_REQUEST);

@@ -1,6 +1,8 @@
 //package com.okta.examples.adapter.jwt;
 //
+//import com.okta.examples.adapter.exception.SessionException;
 //import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.http.HttpStatus;
 //import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 //import org.springframework.security.core.context.SecurityContextHolder;
 //import org.springframework.security.core.userdetails.UserDetails;
@@ -18,21 +20,19 @@
 //public class JwtRequestFilter extends OncePerRequestFilter {
 //
 //    @Autowired
-//    private JwtUserDetailsService jwtUserDetailsService;
-//
-//    @Autowired
-//    private JwtTokenUtil jwtTokenUtil;
+//    JwtUserDetailsService jwtUserDetailsService;
 //
 //    @Override
 //    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 //            throws ServletException, IOException {
 //
-//        final String requestTokenHeader = request.getHeader("Authorization");
-//        System.out.println(request.getSession().getId());
-//        System.out.println(request.getSession().getMaxInactiveInterval());
-//        String username = null;
-//        String jwtToken = null;
-//
+////        final String requestTokenHeader = request.getHeader("Authorization");
+//        String header = request.getHeader("Authorization");
+//        if (header == null || !header.startsWith("Bearer ")){
+//            throw new SessionException("You are not authorized.", HttpStatus.UNAUTHORIZED);
+//        }
+//        String[] split = request.getServletPath().split("/");
+//        String idUser = split[3];
 //        // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
 ////        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
 ////            jwtToken = requestTokenHeader.substring(7);
@@ -63,7 +63,7 @@
 ////                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 ////            }
 ////        }
-//        UserDetails userDetails = this.jwtUserDetailsService.loadBySession(request.getSession());
+//        UserDetails userDetails = this.jwtUserDetailsService.loadBySession(header, idUser);
 //        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 //                userDetails, null, userDetails.getAuthorities());
 //        usernamePasswordAuthenticationToken

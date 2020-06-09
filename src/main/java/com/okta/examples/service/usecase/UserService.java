@@ -39,7 +39,7 @@ public class UserService {
             throw new GetProfileException(message, fromMember.getStatusCode());
         }
 
-        JSONObject user = (JSONObject) jsonMember.get("user");
+        JSONObject user = (JSONObject) jsonMember.get("data");
 
         //Wrap response
         return ResponseSuccess.wrap200(user, "Success",
@@ -64,7 +64,7 @@ public class UserService {
             throw new EditProfileException(message, fromMember.getStatusCode());
         }
 
-        JSONObject user = (JSONObject) jsonMember.get("user");
+        JSONObject user = (JSONObject) jsonMember.get("data");
 
         //Wrap response
         return ResponseSuccess.wrap200(null, "Success",

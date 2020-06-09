@@ -12,7 +12,7 @@ public class AdminValidation {
 
         if (createMerchant.getVoucherName() == null || createMerchant.getVoucherPrice() == null ||
             createMerchant.getDiscount() == null || createMerchant.getMaxDiscount() == null ||
-            createMerchant.getQuota()== null || createMerchant.getDate() == null ||
+            createMerchant.getQuota()== null || createMerchant.getExpiredDate() == null ||
             createMerchant.getStatus() == null){
             throw new CreateMerchantException("Please fill in all the forms.", HttpStatus.BAD_REQUEST);
         }

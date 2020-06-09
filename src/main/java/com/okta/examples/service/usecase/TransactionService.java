@@ -5,6 +5,7 @@ import com.okta.examples.adapter.wrapper.Parser;
 import com.okta.examples.adapter.wrapper.ResponseSuccess;
 import com.okta.examples.service.microservice.OrderDomain;
 import com.okta.examples.service.validation.TransactionValidation;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class TransactionService {
 
         JSONObject order = (JSONObject) jsonOrder.get("data");
 
-        return ResponseSuccess.wrap201(order, "Transaction has been created",
+        return ResponseSuccess.wrap201(order, "Transaction has been created.",
                 "/api/user/"+idUser+"/transaction/voucher");
     }
 
@@ -55,7 +56,7 @@ public class TransactionService {
             throw new MatchOtpException(message, fromOrder.getStatusCode());
         }
 
-        return ResponseSuccess.wrap200(null, "Your payment is successfull",
+        return ResponseSuccess.wrap200(null, "Your payment is successfull.",
                 "/api/user/"+idUser+"/transaction/voucher");
     }
 
@@ -74,7 +75,7 @@ public class TransactionService {
             throw new MatchOtpException(message, fromOrder.getStatusCode());
         }
 
-        return ResponseSuccess.wrap200(null, "TOP UP completed successfully",
+        return ResponseSuccess.wrap200(null, "TOP UP completed successfully.",
                 "/api/user/"+idUser+"/transaction/topup");
     }
 
@@ -90,9 +91,9 @@ public class TransactionService {
             throw new MatchOtpException(message, fromOrder.getStatusCode());
         }
 
-        JSONObject order = (JSONObject) jsonOrder.get("data");
+        JSONArray order = (JSONArray) jsonOrder.get("data");
 
-        return ResponseSuccess.wrap200(order, "Transaction history are successfully collected",
+        return ResponseSuccess.wrap200(order, "Transaction history are successfully collected.",
                 "/api/user/"+idUser+"/transaction");
     }
 
@@ -108,9 +109,9 @@ public class TransactionService {
             throw new MatchOtpException(message, fromOrder.getStatusCode());
         }
 
-        JSONObject order = (JSONObject) jsonOrder.get("data");
+        JSONArray order = (JSONArray) jsonOrder.get("data");
 
-        return ResponseSuccess.wrap200(order, "Transaction history are successfully collected",
+        return ResponseSuccess.wrap200(order, "Transaction history are successfully collected.",
                 "/api/user/"+idUser+"/transaction/"+idTransaction);
     }
 }

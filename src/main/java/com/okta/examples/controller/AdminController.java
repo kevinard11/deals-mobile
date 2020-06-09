@@ -25,30 +25,50 @@ public class AdminController {
                                             @PathVariable("idMerchant") String idMerchant,
                                             @RequestBody CreateMerchant createMerchant,
                                             HttpServletRequest request){
-        sessionValidation.request(idUser, request);
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(adminService.createMerchant(idUser, idMerchant, createMerchant), HttpStatus.CREATED);
     }
 
-    @GetMapping("/show-all-voucher")
-    public ResponseEntity<?> getAllVoucher(@RequestParam("page") String page) {
+    @GetMapping("/{idUser}/show-all-voucher")
+    public ResponseEntity<?> getAllVoucher(@PathVariable("idUser") String idUser,
+                                           @RequestParam("page") String page,
+                                           HttpServletRequest request) {
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(adminService.getAllVoucher(page), HttpStatus.OK);
     }
 
-    @GetMapping("/filter-voucher")
-    public ResponseEntity<?> filterVoucher(@RequestParam("merchantCategory") String merchantCategory,
-                                           @RequestParam("page") String page){
+    @GetMapping("/{idUser}/filter-voucher")
+    public ResponseEntity<?> filterVoucher(@PathVariable("idUser") String idUser,
+                                           @RequestParam("merchantCategory") String merchantCategory,
+                                           @RequestParam("page") String page,
+                                           HttpServletRequest request){
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(adminService.filterVoucher(merchantCategory, page), HttpStatus.OK);
     }
 
-    @GetMapping("/findByMerchantName-voucher")
-    public ResponseEntity<?> searchVoucher(@RequestParam("merchantName") String merchantName,
-                                           @RequestParam("page") String page){
+    @GetMapping("/{idUser}/findByMerchantName-voucher")
+    public ResponseEntity<?> searchVoucher(@PathVariable("idUser") String idUser,
+                                           @RequestParam("merchantName") String merchantName,
+                                           @RequestParam("page") String page,
+                                           HttpServletRequest request){
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(adminService.searchVoucher(merchantName, page), HttpStatus.OK);
     }
 
-    @GetMapping("/sort-voucher")
-    public ResponseEntity<?> sortVoucher(@RequestParam("sortBy") String name,
-                                         @RequestParam("page") String page){
+    @GetMapping("/{idUser}/sort-voucher")
+    public ResponseEntity<?> sortVoucher(@PathVariable("idUser") String idUser,
+                                         @RequestParam("sortBy") String name,
+                                         @RequestParam("page") String page,
+                                         HttpServletRequest request){
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(adminService.sortVoucher(name, page), HttpStatus.OK);
+    }
+
+    @GetMapping("/{idUser}/voucher-detail-voucher/{idVoucher}")
+    public ResponseEntity<?> voucherDetail(@PathVariable("idUser") String idUser,
+                                           @PathVariable("idVoucher") String idVoucher,
+                                           HttpServletRequest request){
+//        sessionValidation.request(idUser, request);
+        return new ResponseEntity<>(adminService.voucherDetail(idVoucher), HttpStatus.OK);
     }
 }
