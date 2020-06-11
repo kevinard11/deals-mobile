@@ -1,11 +1,11 @@
-package com.okta.examples.adapter.exception;
+package com.okta.examples.adapter.status;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-public class UnauthorizedException extends ResponseStatusException {
+public class CreateOrderException extends ResponseStatusException {
 
-    public UnauthorizedException(String message, HttpStatus status) {
+    public CreateOrderException(String message, HttpStatus status) {
         super(status, message);
         System.out.println(message);
     }

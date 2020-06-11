@@ -1,8 +1,8 @@
 package com.okta.examples.service.usecase;
 
 import com.okta.examples.adapter.dto.request.EditProfileRequest;
-import com.okta.examples.adapter.exception.EditProfileException;
-import com.okta.examples.adapter.exception.GetProfileException;
+import com.okta.examples.adapter.status.EditProfileException;
+import com.okta.examples.adapter.status.GetProfileException;
 import com.okta.examples.adapter.wrapper.Parser;
 import com.okta.examples.adapter.wrapper.ResponseSuccess;
 import com.okta.examples.service.microservice.MemberDomain;

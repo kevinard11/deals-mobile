@@ -38,28 +38,28 @@ public class AuthController {
 
     @PostMapping(value = "/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest){
-        return new ResponseEntity<>(authentication.register(registerRequest), HttpStatus.CREATED);
+        return authentication.register(registerRequest, "/register");
     }
 
     @PostMapping(value = "/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        return new ResponseEntity<>(authentication.login(loginRequest), HttpStatus.OK);
+        return authentication.login(loginRequest, "/login");
     }
 
     @PostMapping(value ="/request-otp")
     public ResponseEntity<?> requestOtp(@RequestBody JSONObject data){
-        return new ResponseEntity<>(authentication.requestOtp(data), HttpStatus.OK);
+        return authentication.requestOtp(data, "/request-otp");
     }
 
     @PostMapping(value ="/{idUser}/match-otp")
     public ResponseEntity<?> matchOtp(@PathVariable("idUser") String idUser, @RequestBody JSONObject data){
-        return new ResponseEntity<>(authentication.matchOtp(idUser, data), HttpStatus.OK);
+        return authentication.matchOtp(idUser, data, "/"+idUser+"/mathc-otp");
     }
 
     @PostMapping(value = "/{idUser}/forgot-password")
     public ResponseEntity<?> forgotPassword(@PathVariable("idUser") String idUser,
                                             @RequestBody ForgotPasswordRequest forgotPasswordRequest){
-        return new ResponseEntity<>(authentication.forgotPassword(idUser, forgotPasswordRequest), HttpStatus.OK);
+        return authentication.forgotPassword(idUser, forgotPasswordRequest, "/"+idUser+"/forgot-password");
     }
 
 }

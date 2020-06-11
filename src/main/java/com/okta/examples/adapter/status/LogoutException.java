@@ -1,11 +1,11 @@
-package com.okta.examples.adapter.exception;
+package com.okta.examples.adapter.status;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-public class RequestOtpException extends ResponseStatusException {
+public class LogoutException extends ResponseStatusException {
 
-    public RequestOtpException(String message, HttpStatus status) {
+    public LogoutException(String message, HttpStatus status) {
         super(status, message);
         System.out.println(message);
     }

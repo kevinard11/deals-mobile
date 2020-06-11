@@ -1,12 +1,12 @@
 package com.okta.example.validation;
 
 import com.okta.examples.adapter.dto.request.RegisterRequest;
-import com.okta.examples.adapter.exception.RegisterException;
 import com.okta.examples.service.validation.AuthenticationValidation;
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.Assert.assertTrue;
 
 @SpringBootTest
 public class AuthenticationValidationTest {
@@ -16,7 +16,6 @@ public class AuthenticationValidationTest {
 
     @Test
     public void registerTest(){
-
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setFirst_name("kevin");
         registerRequest.setLast_name("ard");
@@ -25,14 +24,6 @@ public class AuthenticationValidationTest {
         registerRequest.setConfirmPassword("P@ssw0rd");
         registerRequest.setPhoneNumber("+6281287878787");
 
-        boolean test = true;
-
-        try {
-            authenticationValidation.register(registerRequest);
-        }
-        catch (RegisterException e){
-            test = false;
-        }
-        Assert.assertTrue(test);
+        assertTrue(authenticationValidation.register(registerRequest, "/register").getStatusCode().is2xxSuccessful());
     }
 }

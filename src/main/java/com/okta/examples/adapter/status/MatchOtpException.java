@@ -1,11 +1,11 @@
-package com.okta.examples.adapter.exception;
+package com.okta.examples.adapter.status;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-public class CreateOrderException extends ResponseStatusException {
+public class MatchOtpException extends ResponseStatusException {
 
-    public CreateOrderException(String message, HttpStatus status) {
+    public MatchOtpException(String message, HttpStatus status) {
         super(status, message);
         System.out.println(message);
     }

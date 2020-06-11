@@ -1,11 +1,11 @@
-package com.okta.examples.adapter.exception;
+package com.okta.examples.adapter.status;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-public class PayOrderException extends ResponseStatusException {
+public class UnauthorizedException extends ResponseStatusException {
 
-    public PayOrderException(String message, HttpStatus status) {
+    public UnauthorizedException(String message, HttpStatus status) {
         super(status, message);
         System.out.println(message);
     }

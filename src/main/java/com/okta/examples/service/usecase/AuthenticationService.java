@@ -3,7 +3,7 @@ package com.okta.examples.service.usecase;
 import com.okta.examples.adapter.dto.request.ForgotPasswordRequest;
 import com.okta.examples.adapter.dto.request.LoginRequest;
 import com.okta.examples.adapter.dto.request.RegisterRequest;
-import com.okta.examples.adapter.exception.*;
+import com.okta.examples.adapter.status.DealsStatus;
 import com.okta.examples.adapter.wrapper.Parser;
 import com.okta.examples.adapter.wrapper.ResponseFailed;
 import com.okta.examples.adapter.wrapper.ResponseSuccess;
@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -30,48 +31,61 @@ public class AuthenticationService {
     @Autowired
     AuthenticationValidation validate;
 
-    public JSONObject register(RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(RegisterRequest registerRequest, String path) {
 
         //Register validation
         System.out.println("Register Validation. " +new Date());
-        validate.register(registerRequest);
+        ResponseEntity<?> check = validate.register(registerRequest, path);
 
+        if (!check.getStatusCode().is2xxSuccessful()){
+            return check;
+        }
+//        registerRequest.setPassword(encryptPassword(registerRequest.getPassword()));
         //Register validation in member domain
         System.out.println("Register. Send data to member domain : "+ Parser.toJsonString(registerRequest));
         ResponseEntity<?> fromMember = member.register(registerRequest);
         System.out.println("Register. Receive data from member domain :"+ fromMember.getBody().toString());
 
-
         JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
         String message = ""+ jsonMember.get("message");
+        String status = ""+jsonMember.get("status");
 
         //Check response
         if (!fromMember.getStatusCode().is2xxSuccessful()){
-           throw new RegisterException(message, fromMember.getStatusCode());
+           return ResponseFailed.wrapResponseFailed(message, status, fromMember.getStatusCode(), path);
         }
 
         //Create user
         JSONObject user = (JSONObject) jsonMember.get("data");
-        String idUser = ""+user.get("idUser");
-
-        //Create and start session
-        System.out.println("Start new session for id : " + idUser);
-        String idSession = UUID.randomUUID().toString();
-        sessionService.startSession(idUser, idSession);
+//        String idUser = ""+user.get("idUser");
+//
+//        //Create and start session
+//        System.out.println("Start new session for id : " + idUser);
+//        String idSession = UUID.randomUUID().toString();
+//        sessionService.startSession(idUser, idSession);
 
         //Wrap response
         JSONObject result = new JSONObject();
-        result.put("token", idSession);
+//        result.put("token", idSession);
         result.put("user", user);
 
-        return ResponseSuccess.wrap201(result, "Registration is successful.", "/api/auth/register");
+        return ResponseSuccess.wrapResponse(result, DealsStatus.REGISTRATION_SUCCESS, path);
     }
 
-    public JSONObject login(LoginRequest loginRequest){
+    private String encryptPassword(String password){
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return passwordEncoder.encode(password);
+    }
+
+    public ResponseEntity<?> login(LoginRequest loginRequest, String path){
 
         //Login validation
         System.out.println("Login Validation. " +new Date());
-        validate.login(loginRequest);
+        ResponseEntity<?> check = validate.login(loginRequest, path);
+
+        if (!check.getStatusCode().is2xxSuccessful()){
+            return check;
+        }
 
         //Login validation in member domain
         System.out.println("Login. Send data to member domain : "+ Parser.toJsonString(loginRequest));
@@ -80,10 +94,11 @@ public class AuthenticationService {
 
         JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
         String message = ""+ jsonMember.get("message");
+        String status = ""+jsonMember.get("status");
 
         //Check response
         if (!fromMember.getStatusCode().is2xxSuccessful()){
-            throw new LoginException(message, fromMember.getStatusCode());
+            return ResponseFailed.wrapResponseFailed(message, status, fromMember.getStatusCode(), path);
         }
 
         //Create user
@@ -94,6 +109,7 @@ public class AuthenticationService {
         //Check user session
         System.out.println("Check if id : "+ idUser+" already have session");
         if(sessionService.checkSession(idUser) != null){
+
             System.out.println("Session found. Destroy old session for id : "+idUser);
             sessionService.destroySession(idUser);
             System.out.println("Start new session for id : " + idUser);
@@ -106,8 +122,9 @@ public class AuthenticationService {
             result.put("token", idSession);
             result.put("user", user);
 
-            return ResponseSuccess.wrap200(result, "You login in another device.", "/api/auth/login");
+            return ResponseSuccess.wrapResponse(result, DealsStatus.LOGIN_ANOTHER_DEVICE, path);
         }else {
+
             System.out.println("Session not found for id : "+ idUser);
             System.out.println("Start new session for id : " + idUser);
 
@@ -119,14 +136,18 @@ public class AuthenticationService {
             result.put("token", idSession);
             result.put("user", user);
 
-            return ResponseSuccess.wrap200(result, "You are Logged in.", "/api/auth/login");
+            return ResponseSuccess.wrapResponse(result, DealsStatus.LOGIN_SUCCESS, path);
         }
     }
 
-    public JSONObject requestOtp(JSONObject data){
+    public ResponseEntity<?> requestOtp(JSONObject data, String path){
 
         //Request otp validation
-        validate.requestOtp(data);
+        ResponseEntity<?> check = validate.requestOtp(data, path);
+
+        if (!check.getStatusCode().is2xxSuccessful()){
+            return check;
+        }
 
         //Request otp validation in member domain
         System.out.println("Request OTP. Send data to member domain : "+ Parser.toJsonString(data));
@@ -135,23 +156,27 @@ public class AuthenticationService {
 
         JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
         String message = ""+ jsonMember.get("message");
+        String status = ""+jsonMember.get("status");
 
         //Check response
         if (!fromMember.getStatusCode().is2xxSuccessful()){
-            throw new RequestOtpException(message, fromMember.getStatusCode());
+            return ResponseFailed.wrapResponseFailed(message, status, fromMember.getStatusCode(), path);
         }
 
         JSONObject user = (JSONObject) jsonMember.get("data");
 
         //Wrap response
-        return ResponseSuccess.wrap200(user, "Your OTP has sent to your phone number.",
-                "/api/auth/request-otp");
+        return ResponseSuccess.wrapResponse(user, DealsStatus.REQUEST_OTP, path);
     }
 
-    public ResponseEntity<?> matchOtp(String idUser, JSONObject data){
+    public ResponseEntity<?> matchOtp(String idUser, JSONObject data, String path){
 
         // Match otp validation
-        validate.matchOtp(data);
+        ResponseEntity<?> check = validate.matchOtp(data, path);
+
+        if (!check.getStatusCode().is2xxSuccessful()){
+            return check;
+        }
 
         //Match otp validation in member domain
         System.out.println("Match OTP. Send data to member domain : "+ Parser.toJsonString(data));
@@ -160,24 +185,23 @@ public class AuthenticationService {
 
         JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
         String message = ""+ jsonMember.get("message");
-        Integer status = Integer.parseInt(""+jsonMember.get("status"));
+        String status = ""+jsonMember.get("status");
 
         //Check response
         if (!fromMember.getStatusCode().is2xxSuccessful()){
-            return ResponseFailed.wrapResponseFailed(null, message, status,
-                                                    fromMember.getStatusCode(), "/match-otp");
+            return ResponseFailed.wrapResponseFailed(message, status, fromMember.getStatusCode(), path);
         }
 
         //Wrap response
-        return ResponseSuccess.wrapResponseSuccess(null, "OTP Match", 100, HttpStatus.OK, "/match-otp");
+        return ResponseSuccess.wrapResponse(null, DealsStatus.OTP_MATCH, path);
 //        return ResponseSuccess.wrap200(null, "OTP Match.",
 //                "/api/auth/"+idUser+"/match-otp");
     }
 
-    public JSONObject forgotPassword(String idUser, ForgotPasswordRequest forgotPasswordRequest){
+    public ResponseEntity<?> forgotPassword(String idUser, ForgotPasswordRequest forgotPasswordRequest, String path){
 
         //Forgot password validation
-        validate.forgotPassword(forgotPasswordRequest);
+        validate.forgotPassword(forgotPasswordRequest, path);
 
         //Forgot password validation in member domain
         System.out.println("Forgot Password. Send data to member domain : "+ Parser.toJsonString(forgotPasswordRequest));
@@ -186,21 +210,21 @@ public class AuthenticationService {
 
         JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
         String message = ""+ jsonMember.get("message");
+        String status = ""+jsonMember.get("status");
 
         //Check response
         if (!fromMember.getStatusCode().is2xxSuccessful()){
-            throw new ForgotPasswordException(message, fromMember.getStatusCode());
+            return ResponseFailed.wrapResponseFailed(message, status, fromMember.getStatusCode(), path);
         }
 
         //Wrap response
-        return ResponseSuccess.wrap200(null, "Change Password success.",
-                "/api/auth/"+idUser+"/forgot-password");
+        return ResponseSuccess.wrapResponse(null, DealsStatus.FORGOT_PASSWORD, path);
     }
 
-    public ResponseEntity<?> test(JSONObject data){
+    public ResponseEntity<JSONObject> test(JSONObject data){
         if (data == null){
-            return ResponseFailed.wrapResponseFailed(null, "You are not authorized",
-                                                    201, HttpStatus.UNAUTHORIZED, "/test");
+            return ResponseFailed.wrapResponseFailed( "You are not authorized",
+                                                    "201", HttpStatus.UNAUTHORIZED, "/test");
         }
         return ResponseSuccess.wrapResponseSuccess(null, "Success", 100, HttpStatus.OK, "/sda");
     }

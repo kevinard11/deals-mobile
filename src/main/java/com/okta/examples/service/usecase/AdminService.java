@@ -4,7 +4,7 @@ import com.okta.examples.adapter.dto.request.CreateMerchant;
 import com.okta.examples.adapter.wrapper.Parser;
 import com.okta.examples.adapter.wrapper.ResponseSuccess;
 import com.okta.examples.service.microservice.VoucherDomain;
-import com.okta.examples.adapter.exception.MatchOtpException;
+import com.okta.examples.adapter.status.MatchOtpException;
 import com.okta.examples.service.validation.AdminValidation;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

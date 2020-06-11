@@ -1,7 +1,7 @@
 package com.okta.examples.service.validation;
 
-import com.okta.examples.adapter.exception.CreateOrderException;
-import com.okta.examples.adapter.exception.PayOrderException;
+import com.okta.examples.adapter.status.CreateOrderException;
+import com.okta.examples.adapter.status.PayOrderException;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

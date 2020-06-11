@@ -1,7 +1,7 @@
 package com.okta.examples.service.validation;
 
 import com.okta.examples.adapter.dto.request.CreateMerchant;
-import com.okta.examples.adapter.exception.CreateMerchantException;
+import com.okta.examples.adapter.status.CreateMerchantException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

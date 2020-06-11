@@ -99,4 +99,23 @@ public interface MyBatisRepository {
     })
     Integer checkSessionExpired(@Param("idUser") String idUser, @Param("idSession") String idSession);
 
+    final String checkSessionWithoutId = "SELECT count(*) as amount from session where id_session = #{idSession} " +
+                                        " and status = 1";
+    @Select(checkSessionWithoutId)
+    @Results(value = {
+            @Result(column = "amount")
+    })
+    Integer checkSessionWithoutId(@Param("idSession") String idSession);
+
+    final String destroySessionWithoutId = "UPDATE session set status = 0 where id_session = #{idSession} ";
+    @Update(destroySessionWithoutId)
+    void destroySessionWithoutId(@Param("idSession") String idSession);
+
+    final String checkSessionExpiredWithoutId = "SELECT count(*) as amount from session where " +
+            "id_session = #{idSession} and valid_date > now()";
+    @Select(checkSessionExpiredWithoutId)
+    @Results(value = {
+            @Result(column = "amount")
+    })
+    Integer checkSessionExpiredWithoutId(@Param("idSession") String idSession);
 }

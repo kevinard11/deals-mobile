@@ -1,7 +1,7 @@
 package com.okta.examples.service.validation;
 
 import com.okta.examples.adapter.dto.request.EditProfileRequest;
-import com.okta.examples.adapter.exception.EditProfileException;
+import com.okta.examples.adapter.status.EditProfileException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
