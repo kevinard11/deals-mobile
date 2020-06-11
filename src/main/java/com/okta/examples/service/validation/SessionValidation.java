@@ -1,10 +1,11 @@
 package com.okta.examples.service.validation;
 
-import com.okta.examples.adapter.status.SessionException;
+import com.okta.examples.adapter.status.DealsStatus;
+import com.okta.examples.model.response.ResponseFailed;
+import com.okta.examples.model.response.ResponseSuccess;
 import com.okta.examples.repository.MyBatisRepository;
 import com.okta.examples.service.usecase.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,46 +25,46 @@ public class SessionValidation {
         String header = request.getHeader("Authorization");
 
         if (header == null || !header.startsWith("Bearer ")){
-            throw new SessionException("You are not authorized.", HttpStatus.UNAUTHORIZED);
+            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
         }
 
         String session = header.substring(7);
         String idSession = sessionService.checkSession(idUser);
 
         if (idSession == null){
-            throw new SessionException("You are not authorized.", HttpStatus.UNAUTHORIZED);
+            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
         }
 
         if(!idSession.equals(session)){
-            throw new SessionException("You are not authorized.", HttpStatus.UNAUTHORIZED);
+            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
         }
 
         if (sessionService.checkSessionExpired(idUser, idSession) == 0){
             sessionService.destroySession(idUser);
-            throw new SessionException("You are not authorized.", HttpStatus.UNAUTHORIZED);
+            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
         }
 
-        return null;
+        return ResponseSuccess.wrapOk();
     }
 
     public ResponseEntity<?> requestVoucher(HttpServletRequest request){
 
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")){
-            throw new SessionException("You are not authorized.", HttpStatus.UNAUTHORIZED);
+            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
         }
 
         String idSession = header.substring(7);
         if (sessionService.checkSessionWithoutId(idSession) == 0){
-            throw new SessionException("You are not authorized.", HttpStatus.UNAUTHORIZED);
+            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
         }
 
         if (sessionService.checkSessionExpiredWithoutId(idSession) == 0){
             sessionService.destroySessionWithoutId(idSession);
-            throw new SessionException("You are not authorized.", HttpStatus.UNAUTHORIZED);
+            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
         }
 
-        return null;
+        return ResponseSuccess.wrapOk();
     }
 
 }

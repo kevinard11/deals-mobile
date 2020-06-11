@@ -1,9 +1,10 @@
 package com.okta.examples.service.validation;
 
-import com.okta.examples.adapter.status.CreateOrderException;
-import com.okta.examples.adapter.status.PayOrderException;
+import com.okta.examples.adapter.status.DealsStatus;
+import com.okta.examples.model.response.ResponseFailed;
+import com.okta.examples.model.response.ResponseSuccess;
 import org.json.simple.JSONObject;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.regex.Pattern;
@@ -14,32 +15,38 @@ public class TransactionValidation {
     private final String regex_va = "^[\\d]{15,16}$";
     private final String regex_amount = "^(?=.*[\\d])(?!.*[\\D]).+$|^[\\d][.][\\d]+$";
 
-    public void createOrder(JSONObject data){
+    public ResponseEntity<?> createOrder(JSONObject data, String path){
 
         if (data.get("idVoucher") == null){
-            throw new CreateOrderException("Please fill in all the forms.", HttpStatus.BAD_REQUEST);
+            return ResponseFailed.wrapResponse(DealsStatus.FILL_ALL_FORMS, path);
         }
+
+        return ResponseSuccess.wrapOk();
     }
 
-    public void payOrder(JSONObject data){
+    public ResponseEntity<?> payOrder(JSONObject data, String path){
 
         if (data.get("idTransaction") == null){
-            throw new PayOrderException("Please fill in all the forms.", HttpStatus.BAD_REQUEST);
+            return ResponseFailed.wrapResponse(DealsStatus.FILL_ALL_FORMS, path);
         }
+
+        return ResponseSuccess.wrapOk();
     }
 
-    public void payTopup(JSONObject data){
+    public ResponseEntity<?> payTopup(JSONObject data, String path){
 
         if (data.get("virtualNumber") == null || data.get("amount") == null){
-            throw new PayOrderException("Please fill in all the forms.", HttpStatus.BAD_REQUEST);
+            return ResponseFailed.wrapResponse(DealsStatus.FILL_ALL_FORMS, path);
         }
 
         if (!Pattern.matches(regex_va, ""+data.get("virtualNumber"))){
-            throw new PayOrderException("Virtual Number is invalid", HttpStatus.BAD_REQUEST);
+            return ResponseFailed.wrapResponse(DealsStatus.VIRTUAL_ACCOUNT_INVALID, path);
         }
 
         if (!Pattern.matches(regex_amount,""+data.get("amount"))){
-            throw new PayOrderException("Amount is invalid.", HttpStatus.BAD_REQUEST);
+            return ResponseFailed.wrapResponse(DealsStatus.AMOUNT_INVALID, path);
         }
+
+        return ResponseSuccess.wrapOk();
     }
 }

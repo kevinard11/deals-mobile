@@ -1,10 +1,10 @@
 package com.okta.examples.service.usecase;
 
-import com.okta.examples.adapter.dto.request.CreateMerchant;
-import com.okta.examples.adapter.wrapper.Parser;
-import com.okta.examples.adapter.wrapper.ResponseSuccess;
+import com.okta.examples.model.request.CreateMerchant;
+import com.okta.examples.adapter.parser.Parser;
+import com.okta.examples.model.response.ResponseSuccess;
 import com.okta.examples.service.microservice.VoucherDomain;
-import com.okta.examples.adapter.status.MatchOtpException;
+import com.okta.examples.adapter.status.exception.MatchOtpException;
 import com.okta.examples.service.validation.AdminValidation;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

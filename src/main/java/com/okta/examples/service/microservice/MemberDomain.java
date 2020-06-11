@@ -1,9 +1,9 @@
 package com.okta.examples.service.microservice;
 
-import com.okta.examples.adapter.dto.request.EditProfileRequest;
-import com.okta.examples.adapter.dto.request.ForgotPasswordRequest;
-import com.okta.examples.adapter.dto.request.LoginRequest;
-import com.okta.examples.adapter.dto.request.RegisterRequest;
+import com.okta.examples.model.request.EditProfileRequest;
+import com.okta.examples.model.request.ForgotPasswordRequest;
+import com.okta.examples.model.request.LoginRequest;
+import com.okta.examples.model.request.RegisterRequest;
 import com.okta.examples.adapter.template.Template;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +26,8 @@ public class MemberDomain {
 
     private final String api = "http://localhost:8080";
 
-    public ResponseEntity<?> register(RegisterRequest registerRequest){
-       return template.post(api+"/register1", registerRequest);
+    public ResponseEntity<?> register(RegisterRequest registerRequest, String path){
+       return template.post(api+path, registerRequest);
     }
 
     public ResponseEntity<?> login(LoginRequest loginRequest){

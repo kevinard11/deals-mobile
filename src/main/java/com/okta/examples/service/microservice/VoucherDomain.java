@@ -1,6 +1,6 @@
 package com.okta.examples.service.microservice;
 
-import com.okta.examples.adapter.dto.request.CreateMerchant;
+import com.okta.examples.model.request.CreateMerchant;
 import com.okta.examples.adapter.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +16,14 @@ public class VoucherDomain {
     @Autowired
     private Template template;
 
-    private final String api = "https://voucherservice.burrow.io/api";
+    private final String api = "https://voucher-service.herokuapp.com/api";
 
     public ResponseEntity<?> getVoucher(){
         return template.get(api+"/admin/filterByStatus-voucher?filterByStatus=false");
     }
 
-    public ResponseEntity<?> getAllVoucher(String page){
-        return template.get(api+"/user/show-all-voucher" +
-                "?page=" +page);
+    public ResponseEntity<?> getAllVoucher(String page, String path){
+        return template.get(api+"/user/show-all-voucher");
     }
 
     public ResponseEntity<?> voucherDetail(String idVoucher){

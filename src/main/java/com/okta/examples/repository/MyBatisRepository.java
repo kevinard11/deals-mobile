@@ -1,6 +1,6 @@
 package com.okta.examples.repository;
 
-import com.okta.examples.adapter.dto.request.RegisterRequest;
+import com.okta.examples.model.request.RegisterRequest;
 import com.okta.examples.model.User;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;

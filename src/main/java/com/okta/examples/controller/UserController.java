@@ -1,6 +1,6 @@
 package com.okta.examples.controller;
 
-import com.okta.examples.adapter.dto.request.EditProfileRequest;
+import com.okta.examples.model.request.EditProfileRequest;
 import com.okta.examples.service.usecase.TransactionService;
 import com.okta.examples.service.usecase.UserService;
 import com.okta.examples.service.usecase.VoucherService;
@@ -42,24 +42,33 @@ public class UserController {
     @GetMapping(value = "/{id_user}")
     public ResponseEntity<?> getProfile(@PathVariable("id_user") String idUser,
                                         HttpServletRequest request){
-        sessionValidation.request(idUser, request);
-        return new ResponseEntity<>(userService.getProfile(idUser), HttpStatus.OK);
+//        ResponseEntity<?> checkSessiom = sessionValidation.request(idUser, request);
+//        if (!checkSessiom.getStatusCode().is2xxSuccessful()){
+//            return checkSessiom;
+//        }
+        return userService.getProfile(idUser, request.getServletPath());
     }
 
     @PutMapping(value = "/{idUser}")
     public ResponseEntity<?> editProfile(@PathVariable("idUser") String idUser,
                                          @RequestBody EditProfileRequest editProfileRequest,
                                          HttpServletRequest request){
-        sessionValidation.request(idUser, request);
-        return new ResponseEntity<>(userService.editProfile(idUser, editProfileRequest), HttpStatus.OK);
+//        ResponseEntity<?> checkSessiom = sessionValidation.request(idUser, request);
+//        if (!checkSessiom.getStatusCode().is2xxSuccessful()){
+//            return checkSessiom;
+//        }
+        return userService.editProfile(idUser, editProfileRequest, request.getServletPath());
     }
 
     @PostMapping(value= "/{id_user}/transaction/voucher")
     public ResponseEntity<?> createOrderVoucher(@PathVariable("id_user") String idUser,
                                                 @RequestBody JSONObject data,
                                                 HttpServletRequest request){
-//        sessionValidation.request(idUser, request);
-        return new ResponseEntity<>(transactionService.createOrderVoucher(idUser, data), HttpStatus.CREATED);
+//        ResponseEntity<?> checkSessiom = sessionValidation.request(idUser, request);
+//        if (!checkSessiom.getStatusCode().is2xxSuccessful()){
+//            return checkSessiom;
+//        }
+        return transactionService.createOrderVoucher(idUser, data, request.getServletPath());
     }
 
     @PutMapping(value = "/{idUser}/transaction/voucher")
@@ -67,7 +76,7 @@ public class UserController {
                                              @RequestBody JSONObject data,
                                              HttpServletRequest request){
 //        sessionValidation.request(idUser, request);
-        return new ResponseEntity<>(transactionService.payOrderVoucher(idUser, data), HttpStatus.OK);
+        return transactionService.payOrderVoucher(idUser, data, request.getServletPath());
     }
 
     @PostMapping(value = "/{idUser}/transaction/topup")
@@ -75,7 +84,7 @@ public class UserController {
                                       @RequestBody JSONObject data,
                                       HttpServletRequest request){
 //        sessionValidation.request(idUser, request);
-        return new ResponseEntity<>(transactionService.payTopup(idUser, data), HttpStatus.OK);
+        return transactionService.payTopup(idUser, data, request.getServletPath());
     }
 
     @GetMapping(value = "/{idUser}/transaction")
@@ -85,9 +94,12 @@ public class UserController {
                                                 @RequestParam(value = "filter-end-date", required = false) String filterEnd,
                                                 @RequestParam(value = "page", required = false) Integer page,
                                                 HttpServletRequest request){
-//        sessionValidation.request(idUser, request);
-        return new ResponseEntity<>(transactionService.transactionHistory(idUser, category, filterStart, filterEnd, page),
-                                    HttpStatus.OK);
+        ResponseEntity<?> checkSessiom = sessionValidation.requestVoucher(request);
+        if (!checkSessiom.getStatusCode().is2xxSuccessful()){
+            return checkSessiom;
+        }
+        System.out.println(request.getServletPath());
+        return transactionService.transactionHistory(idUser, category, filterStart, filterEnd, page, request.getServletPath());
     }
 
     @GetMapping(value = "/{idUser}/transaction/{idTransaction}")
@@ -95,36 +107,38 @@ public class UserController {
                                                @PathVariable("idTransaction") String idTransaction,
                                                HttpServletRequest request){
 //        sessionValidation.request(idUser, request);
-        return new ResponseEntity<>(transactionService.transactionDetail(idUser, idTransaction),
-                HttpStatus.OK);
+        return transactionService.transactionDetail(idUser, idTransaction, request.getServletPath());
     }
 
     @GetMapping("/show-all-voucher")
-    public ResponseEntity<?> getAllVoucher(@RequestParam("page") String page,
+    public ResponseEntity<?> getAllVoucher(@RequestParam(value = "page", required = false) String page,
                                            HttpServletRequest request) {
-        sessionValidation.requestVoucher(request);
-        return new ResponseEntity<>(voucherService.getAllVoucher(page), HttpStatus.OK);
+//        ResponseEntity<?> check = sessionValidation.requestVoucher(request);
+//        if (!check.getStatusCode().is2xxSuccessful()){
+//            return check;
+//        }
+        return voucherService.getAllVoucher(page, request.getServletPath());
     }
 
     @GetMapping("/filter-voucher")
-    public ResponseEntity<?> filterVoucher(@RequestParam("merchantCategory") String merchantCategory,
-                                           @RequestParam("page") String page,
+    public ResponseEntity<?> filterVoucher(@RequestParam(value = "merchantCategory", required = false) String merchantCategory,
+                                           @RequestParam(value = "page", required = false) String page,
                                            HttpServletRequest request){
-        sessionValidation.requestVoucher(request);
-        return new ResponseEntity<>(voucherService.filterVoucher(merchantCategory, page), HttpStatus.OK);
+////        sessionValidation.requestVoucher(request);
+        return new ResponseEntity<>(voucherService.filterVoucher(merchantCategory, page, request.getServletPath()), HttpStatus.OK);
     }
 
     @GetMapping("/findByMerchantName-voucher")
-    public ResponseEntity<?> searchVoucher(@RequestParam("merchantName") String merchantName,
-                                           @RequestParam("page") String page,
+    public ResponseEntity<?> searchVoucher(@RequestParam(value = "merchantName", required = false) String merchantName,
+                                           @RequestParam(value = "page", required = false) String page,
                                            HttpServletRequest request){
         sessionValidation.requestVoucher(request);
         return new ResponseEntity<>(voucherService.searchVoucher(merchantName, page), HttpStatus.OK);
     }
 
     @GetMapping("/sort-voucher")
-    public ResponseEntity<?> sortVoucher(@RequestParam("sortBy") String name,
-                                         @RequestParam("page") String page,
+    public ResponseEntity<?> sortVoucher(@RequestParam(value = "sortBy", required = false) String name,
+                                         @RequestParam(value = "page", required = false) String page,
                                          HttpServletRequest request){
         sessionValidation.requestVoucher(request);
         return new ResponseEntity<>(voucherService.sortVoucher(name, page), HttpStatus.OK);
@@ -134,7 +148,7 @@ public class UserController {
     public ResponseEntity<?> logout(@PathVariable("idUser") String idUser,
                                     HttpServletRequest request){
 //        sessionValidation.request(idUser, request);
-        return new ResponseEntity<>(userService.logout(idUser), HttpStatus.OK);
+        return userService.logout(idUser, request.getServletPath());
     }
 
 }

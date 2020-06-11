@@ -1,8 +1,9 @@
 package com.okta.examples.service.usecase;
 
-import com.okta.examples.adapter.status.MatchOtpException;
-import com.okta.examples.adapter.wrapper.Parser;
-import com.okta.examples.adapter.wrapper.ResponseSuccess;
+import com.okta.examples.adapter.status.DealsStatus;
+import com.okta.examples.adapter.parser.Parser;
+import com.okta.examples.model.response.ResponseFailed;
+import com.okta.examples.model.response.ResponseSuccess;
 import com.okta.examples.service.microservice.OrderDomain;
 import com.okta.examples.service.validation.TransactionValidation;
 import org.json.simple.JSONObject;
@@ -19,9 +20,9 @@ public class TransactionService {
     @Autowired
     TransactionValidation validate;
 
-    public JSONObject createOrderVoucher(String idUser, JSONObject data){
+    public ResponseEntity<?> createOrderVoucher(String idUser, JSONObject data, String path){
 
-        validate.createOrder(data);
+        validate.createOrder(data, path);
 
         System.out.println("Create Order. Send data to order domain : "+ Parser.toJsonString(data));
         ResponseEntity<?> fromOrder = order.createOrder(idUser, data);
@@ -29,20 +30,20 @@ public class TransactionService {
 
         JSONObject jsonOrder = Parser.parseJSON(fromOrder.getBody().toString());
         String message = ""+ jsonOrder.get("message");
+        String status = ""+ jsonOrder.get("status");
 
         if (!fromOrder.getStatusCode().is2xxSuccessful()){
-            throw new MatchOtpException(message, fromOrder.getStatusCode());
+            return ResponseFailed.wrapResponseFailed(message, status, fromOrder.getStatusCode(), path);
         }
 
         JSONObject order = (JSONObject) jsonOrder.get("data");
 
-        return ResponseSuccess.wrap201(order, "Transaction has been created.",
-                "/api/user/"+idUser+"/transaction/voucher");
+        return ResponseSuccess.wrapResponse(order, DealsStatus.TRANSACTION_CREATED, path);
     }
 
-    public JSONObject payOrderVoucher(String idUser, JSONObject data){
+    public ResponseEntity<?> payOrderVoucher(String idUser, JSONObject data, String path){
 
-        validate.payOrder(data);
+        validate.payOrder(data, path);
 
         System.out.println("Pay Order. Send data to order domain : "+ Parser.toJsonString(data));
         ResponseEntity<?> fromOrder = order.payOrder(idUser, data);
@@ -50,18 +51,20 @@ public class TransactionService {
 
         JSONObject jsonOrder = Parser.parseJSON(fromOrder.getBody().toString());
         String message = ""+ jsonOrder.get("message");
+        String status = ""+ jsonOrder.get("status");
 
         if (!fromOrder.getStatusCode().is2xxSuccessful()){
-            throw new MatchOtpException(message, fromOrder.getStatusCode());
+            return ResponseFailed.wrapResponseFailed(message, status, fromOrder.getStatusCode(), path);
         }
 
-        return ResponseSuccess.wrap200(null, "Your payment is successfull.",
-                "/api/user/"+idUser+"/transaction/voucher");
+        return ResponseSuccess.wrapResponse(null, DealsStatus.PAYMENT_SUCCESS, path);
+//        return ResponseSuccess.wrap200(null, "Your payment is successfull.",
+//                "/api/user/"+idUser+"/transaction/voucher");
     }
 
-    public JSONObject payTopup(String idUser, JSONObject data){
+    public ResponseEntity<?> payTopup(String idUser, JSONObject data, String path){
 
-        validate.payTopup(data);
+        validate.payTopup(data, path);
 
         System.out.println("Pay TOP UP. Send data to order domain : "+ Parser.toJsonString(data));
         ResponseEntity<?> fromOrder = order.payTopup(idUser, data);
@@ -69,48 +72,55 @@ public class TransactionService {
 
         JSONObject jsonOrder = Parser.parseJSON(fromOrder.getBody().toString());
         String message = ""+ jsonOrder.get("message");
+        String status = ""+ jsonOrder.get("status");
 
         if (!fromOrder.getStatusCode().is2xxSuccessful()){
-            throw new MatchOtpException(message, fromOrder.getStatusCode());
+            return ResponseFailed.wrapResponseFailed(message, status, fromOrder.getStatusCode(), path);
         }
 
-        return ResponseSuccess.wrap200(null, "TOP UP completed successfully.",
-                "/api/user/"+idUser+"/transaction/topup");
+        return ResponseSuccess.wrapResponse(null, DealsStatus.PAYMENT_SUCCESS, path);
+
+//        return ResponseSuccess.wrap200(null, "TOP UP completed successfully.",
+//                "/api/user/"+idUser+"/transaction/topup");
     }
 
-    public JSONObject transactionHistory(String idUser, String category, String filterStart, String filterEnd, Integer page){
+    public ResponseEntity<?> transactionHistory(String idUser, String category, String filterStart, String filterEnd, Integer page, String path){
 
-        ResponseEntity<?> fromOrder = order.transactionHistory(idUser, category, filterStart, filterEnd, page);
+        ResponseEntity<?> fromOrder = order.transactionHistory(idUser, category, filterStart, filterEnd, page, path);
         System.out.println("Transaction History. Receive data from order domain :"+ fromOrder.getBody().toString());
 
         JSONObject jsonOrder = Parser.parseJSON(fromOrder.getBody().toString());
         String message = ""+ jsonOrder.get("message");
+        String status = ""+ jsonOrder.get("status");
 
         if (!fromOrder.getStatusCode().is2xxSuccessful()){
-            throw new MatchOtpException(message, fromOrder.getStatusCode());
+            return ResponseFailed.wrapResponseFailed(message, status, fromOrder.getStatusCode(), path);
         }
 
         JSONObject order = (JSONObject) jsonOrder.get("data");
 
-        return ResponseSuccess.wrap200(order, "Transaction history are successfully collected.",
-                "/api/user/"+idUser+"/transaction");
+        return ResponseSuccess.wrapResponse(order, DealsStatus.TRANSACTION_HISTORY_COLLECTED, path);
+//        return ResponseSuccess.wrap200(order, "Transaction history are successfully collected.",
+//                "/api/user/"+idUser+"/transaction");
     }
 
-    public JSONObject transactionDetail(String idUser, String idTransaction){
+    public ResponseEntity<?> transactionDetail(String idUser, String idTransaction, String path){
 
         ResponseEntity<?> fromOrder = order.transactionDetail(idUser, idTransaction);
         System.out.println("Transaction History. Receive data from order domain :"+ fromOrder.getBody().toString());
 
         JSONObject jsonOrder = Parser.parseJSON(fromOrder.getBody().toString());
         String message = ""+ jsonOrder.get("message");
+        String status = ""+ jsonOrder.get("status");
 
         if (!fromOrder.getStatusCode().is2xxSuccessful()){
-            throw new MatchOtpException(message, fromOrder.getStatusCode());
+            return ResponseFailed.wrapResponseFailed(message, status, fromOrder.getStatusCode(), path);
         }
 
         JSONObject order = (JSONObject) jsonOrder.get("data");
 
-        return ResponseSuccess.wrap200(order, "Transaction history are successfully collected.",
-                "/api/user/"+idUser+"/transaction/"+idTransaction);
+        return ResponseSuccess.wrapResponse(order, DealsStatus.TRANSACTION_HISTORY_COLLECTED, path);
+//        return ResponseSuccess.wrap200(order, "Transaction history are successfully collected.",
+//                "/api/user/"+idUser+"/transaction/"+idTransaction);
     }
 }

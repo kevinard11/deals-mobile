@@ -1,7 +1,7 @@
 package com.okta.examples.service.validation;
 
-import com.okta.examples.adapter.dto.request.EditProfileRequest;
-import com.okta.examples.adapter.status.EditProfileException;
+import com.okta.examples.model.request.EditProfileRequest;
+import com.okta.examples.adapter.status.exception.EditProfileException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ public class UserValidation {
     private final String regex_password = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=\\S+$).{8,}$";
     private final String regex_name = "^(?=.{1,9}[a-zA-Z\\'\\-][ ])(?=.*[\\s])(?!.*[0-9])(?!.*[!@#$%^&*]).{3,20}$|^(?=.*[a-zA-Z\\'\\-])(?!.*[0-9])(?!.*[!@#$%^&*]).{3,10}$";
 
-    public void editProfile(EditProfileRequest editProfileRequest){
+    public void editProfile(EditProfileRequest editProfileRequest, String path){
 
         boolean content = false;
 

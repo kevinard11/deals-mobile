@@ -1,16 +1,18 @@
 package com.okta.examples.service.usecase;
 
-import com.okta.examples.adapter.dto.request.EditProfileRequest;
-import com.okta.examples.adapter.status.EditProfileException;
-import com.okta.examples.adapter.status.GetProfileException;
-import com.okta.examples.adapter.wrapper.Parser;
-import com.okta.examples.adapter.wrapper.ResponseSuccess;
+import com.okta.examples.adapter.parser.Parser;
+import com.okta.examples.adapter.status.DealsStatus;
+import com.okta.examples.model.request.EditProfileRequest;
+import com.okta.examples.model.response.ResponseFailed;
+import com.okta.examples.model.response.ResponseSuccess;
 import com.okta.examples.service.microservice.MemberDomain;
 import com.okta.examples.service.validation.UserValidation;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class UserService {
@@ -24,7 +26,7 @@ public class UserService {
     @Autowired
     SessionService sessionService;
 
-    public JSONObject getProfile(String idUser){
+    public ResponseEntity<?> getProfile(String idUser, String path){
 
         //Get profil in member domain
         ResponseEntity<?> fromMember = member.getProfile(idUser);
@@ -32,23 +34,25 @@ public class UserService {
 
         JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
         String message = ""+ jsonMember.get("message");
+        String status = ""+ jsonMember.get("status");
 
         //Check response
         if (!fromMember.getStatusCode().is2xxSuccessful()){
-            throw new GetProfileException(message, fromMember.getStatusCode());
+            return ResponseFailed.wrapResponseFailed(message, status, fromMember.getStatusCode(), path);
         }
 
         JSONObject user = (JSONObject) jsonMember.get("data");
 
         //Wrap response
-        return ResponseSuccess.wrap200(user, "Success",
-                "/api/user/"+idUser);
+        return ResponseSuccess.wrapResponse(user, DealsStatus.PROFILE_COLLECTED, path);
+//        return ResponseSuccess.wrap200(user, "Success",
+//                "/api/user/"+idUser);
     }
 
-    public JSONObject editProfile(String idUser, EditProfileRequest editProfileRequest){
+    public ResponseEntity<?> editProfile(String idUser, EditProfileRequest editProfileRequest, String path){
 
         //Edit profile validation
-        validate.editProfile(editProfileRequest);
+        validate.editProfile(editProfileRequest, path);
 
         //Edit profile validation in member domain
         System.out.println("Edit Profile. Send data to member domain : "+ Parser.toJsonString(editProfileRequest));
@@ -57,24 +61,26 @@ public class UserService {
 
         JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
         String message = ""+ jsonMember.get("message");
+        String status = ""+ jsonMember.get("status");
 
         //Check response
         if (!fromMember.getStatusCode().is2xxSuccessful()){
-            throw new EditProfileException(message, fromMember.getStatusCode());
+            return ResponseFailed.wrapResponseFailed(message, status, fromMember.getStatusCode(), path);
         }
 
         JSONObject user = (JSONObject) jsonMember.get("data");
 
         //Wrap response
-        return ResponseSuccess.wrap200(null, "Success",
-                "/api/user/"+idUser);
+        return ResponseSuccess.wrapResponse(user, DealsStatus.PROFILE_UPDATED, path);
+//        return ResponseSuccess.wrap200(null, "Success",
+//                "/api/user/"+idUser);
     }
 
-    public JSONObject logout(String idUser){
+    public ResponseEntity<?> logout(String idUser, String path){
 
         //Logout in member domain
 //        ResponseEntity<?> fromMember = member.logout(idUser);
-        System.out.println("Logout.");
+        System.out.println("Logout. "+ new Date());
 //
 //        JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
 //        String message = ""+ jsonMember.get("message");
@@ -89,8 +95,9 @@ public class UserService {
         sessionService.destroySession(idUser);
 
         //Wrap response
-        return ResponseSuccess.wrap200(null, "You are logged out",
-                "/api/user/"+idUser);
+        return ResponseSuccess.wrapResponse(null, DealsStatus.LOGOUT_SUCCESS, path);
+//        return ResponseSuccess.wrap200(null, "You are logged out",
+//                "/api/user/"+idUser);
     }
 
 }

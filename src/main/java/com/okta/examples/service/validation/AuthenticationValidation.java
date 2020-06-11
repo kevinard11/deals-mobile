@@ -1,11 +1,11 @@
 package com.okta.examples.service.validation;
 
-import com.okta.examples.adapter.dto.request.ForgotPasswordRequest;
-import com.okta.examples.adapter.dto.request.LoginRequest;
-import com.okta.examples.adapter.dto.request.RegisterRequest;
+import com.okta.examples.model.request.ForgotPasswordRequest;
+import com.okta.examples.model.request.LoginRequest;
+import com.okta.examples.model.request.RegisterRequest;
 import com.okta.examples.adapter.status.DealsStatus;
-import com.okta.examples.adapter.wrapper.ResponseFailed;
-import com.okta.examples.adapter.wrapper.ResponseSuccess;
+import com.okta.examples.model.response.ResponseFailed;
+import com.okta.examples.model.response.ResponseSuccess;
 import org.json.simple.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,12 +24,12 @@ public class AuthenticationValidation {
     public ResponseEntity<?> register(RegisterRequest registerRequest, String path) {
 
         if (registerRequest.getEmail() == null || registerRequest.getPhoneNumber() == null ||
-            registerRequest.getPassword()== null || registerRequest.getFirst_name() == null ||
+            registerRequest.getPassword()== null || registerRequest.getName() == null ||
             registerRequest.getConfirmPassword() == null){
             return ResponseFailed.wrapResponse(DealsStatus.FILL_ALL_FORMS, path);
         }
 
-        if (!Pattern.matches(regex_name, registerRequest.getFirst_name())){
+        if (!Pattern.matches(regex_name, registerRequest.getName())){
             return ResponseFailed.wrapResponse(DealsStatus.NAME_INVALID, path);
         }
         if (!Pattern.matches(regex_email, registerRequest.getEmail())) {
@@ -74,9 +74,10 @@ public class AuthenticationValidation {
             return ResponseFailed.wrapResponse(DealsStatus.FILL_ALL_FORMS, path);
         }
 
-        if(!Pattern.matches(regex_telephone, ""+data.get("telephone"))){
+        if(!Pattern.matches(regex_telephone, ""+data.get("phoneNumber"))){
             return ResponseFailed.wrapResponse(DealsStatus.PHONE_NUMBER_INVALID, path);
         }
+
         return ResponseSuccess.wrapOk();
     }
 
@@ -89,6 +90,7 @@ public class AuthenticationValidation {
         if(!Pattern.matches(regex_otp, ""+data.get("otp"))){
             return ResponseFailed.wrapResponse(DealsStatus.DATA_INVALID, path);
         }
+
         return ResponseSuccess.wrapOk();
     }
 
@@ -105,6 +107,7 @@ public class AuthenticationValidation {
         if (!forgotPasswordRequest.getNewPassword().equals(forgotPasswordRequest.getConfirmPassword())){
             return ResponseFailed.wrapResponse(DealsStatus.PASSWORD_MISS_MATCH, path);
         }
+
         return ResponseSuccess.wrapOk();
     }
 }

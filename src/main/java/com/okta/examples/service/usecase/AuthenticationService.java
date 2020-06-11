@@ -1,12 +1,12 @@
 package com.okta.examples.service.usecase;
 
-import com.okta.examples.adapter.dto.request.ForgotPasswordRequest;
-import com.okta.examples.adapter.dto.request.LoginRequest;
-import com.okta.examples.adapter.dto.request.RegisterRequest;
 import com.okta.examples.adapter.status.DealsStatus;
-import com.okta.examples.adapter.wrapper.Parser;
-import com.okta.examples.adapter.wrapper.ResponseFailed;
-import com.okta.examples.adapter.wrapper.ResponseSuccess;
+import com.okta.examples.adapter.parser.Parser;
+import com.okta.examples.model.response.ResponseFailed;
+import com.okta.examples.model.response.ResponseSuccess;
+import com.okta.examples.model.request.ForgotPasswordRequest;
+import com.okta.examples.model.request.LoginRequest;
+import com.okta.examples.model.request.RegisterRequest;
 import com.okta.examples.service.microservice.MemberDomain;
 import com.okta.examples.service.validation.AuthenticationValidation;
 import org.json.simple.JSONObject;
@@ -43,7 +43,7 @@ public class AuthenticationService {
 //        registerRequest.setPassword(encryptPassword(registerRequest.getPassword()));
         //Register validation in member domain
         System.out.println("Register. Send data to member domain : "+ Parser.toJsonString(registerRequest));
-        ResponseEntity<?> fromMember = member.register(registerRequest);
+        ResponseEntity<?> fromMember = member.register(registerRequest, path);
         System.out.println("Register. Receive data from member domain :"+ fromMember.getBody().toString());
 
         JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
@@ -221,12 +221,12 @@ public class AuthenticationService {
         return ResponseSuccess.wrapResponse(null, DealsStatus.FORGOT_PASSWORD, path);
     }
 
-    public ResponseEntity<JSONObject> test(JSONObject data){
+    public ResponseEntity<JSONObject> test(JSONObject data, String path){
         if (data == null){
             return ResponseFailed.wrapResponseFailed( "You are not authorized",
-                                                    "201", HttpStatus.UNAUTHORIZED, "/test");
+                                                    "201", HttpStatus.UNAUTHORIZED, path);
         }
-        return ResponseSuccess.wrapResponseSuccess(null, "Success", 100, HttpStatus.OK, "/sda");
+        return ResponseSuccess.wrapResponseSuccess(path, "Success", 100, HttpStatus.OK, "/sda");
     }
 
 }

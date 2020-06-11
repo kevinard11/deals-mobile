@@ -13,5 +13,27 @@ public class AuthenticationServiceTest {
 
     @Test
     public void registerTest(){
+
     }
+
+    @Test
+    public void loginTest(){
+
+    }
+
+    @Test
+    public void requestOtp(){
+
+    }
+
+    @Test
+    public void matchOtp(){
+
+    }
+
+    @Test
+    public void forgotPassword(){
+
+    }
+
 }

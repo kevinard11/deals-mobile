@@ -1,6 +1,6 @@
 package com.okta.examples.controller;
 
-import com.okta.examples.adapter.dto.request.CreateMerchant;
+import com.okta.examples.model.request.CreateMerchant;
 import com.okta.examples.service.usecase.AdminService;
 import com.okta.examples.service.validation.SessionValidation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class AdminController {
     }
 
     @GetMapping("/show-all-voucher")
-    public ResponseEntity<?> getAllVoucher(@RequestParam("page") String page,
+    public ResponseEntity<?> getAllVoucher(@RequestParam(value = "page", required = false) String page,
                                            HttpServletRequest request) {
         sessionValidation.requestVoucher(request);
         return new ResponseEntity<>(adminService.getAllVoucher(page), HttpStatus.OK);

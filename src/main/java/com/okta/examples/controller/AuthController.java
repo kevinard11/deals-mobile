@@ -1,8 +1,8 @@
 package com.okta.examples.controller;
 
-import com.okta.examples.adapter.dto.request.ForgotPasswordRequest;
-import com.okta.examples.adapter.dto.request.LoginRequest;
-import com.okta.examples.adapter.dto.request.RegisterRequest;
+import com.okta.examples.model.request.ForgotPasswordRequest;
+import com.okta.examples.model.request.LoginRequest;
+import com.okta.examples.model.request.RegisterRequest;
 import com.okta.examples.service.usecase.AuthenticationService;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +19,10 @@ public class AuthController {
     AuthenticationService authentication;
 
 
-    @GetMapping("/test")
-    public ResponseEntity<?> siginin(){
+    @GetMapping("/test/{idUser}/hai/{idTransaction}")
+    public ResponseEntity<?> siginin(HttpServletRequest request){
 //        return new ResponseEntity<>(result.getBody(), result.getStatusCode());
-        return authentication.test(null);
+        return authentication.test(null, request.getServletPath());
     }
 
     @GetMapping("/")
@@ -37,29 +37,31 @@ public class AuthController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest){
-        return authentication.register(registerRequest, "/register");
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest, HttpServletRequest request){
+        return authentication.register(registerRequest, request.getServletPath());
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        return authentication.login(loginRequest, "/login");
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+        return authentication.login(loginRequest, request.getServletPath());
     }
 
     @PostMapping(value ="/request-otp")
-    public ResponseEntity<?> requestOtp(@RequestBody JSONObject data){
-        return authentication.requestOtp(data, "/request-otp");
+    public ResponseEntity<?> requestOtp(@RequestBody JSONObject data, HttpServletRequest request){
+        return authentication.requestOtp(data, request.getServletPath());
     }
 
     @PostMapping(value ="/{idUser}/match-otp")
-    public ResponseEntity<?> matchOtp(@PathVariable("idUser") String idUser, @RequestBody JSONObject data){
-        return authentication.matchOtp(idUser, data, "/"+idUser+"/mathc-otp");
+    public ResponseEntity<?> matchOtp(@PathVariable("idUser") String idUser,
+                                      @RequestBody JSONObject data, HttpServletRequest request){
+        return authentication.matchOtp(idUser, data, request.getServletPath());
     }
 
     @PostMapping(value = "/{idUser}/forgot-password")
     public ResponseEntity<?> forgotPassword(@PathVariable("idUser") String idUser,
-                                            @RequestBody ForgotPasswordRequest forgotPasswordRequest){
-        return authentication.forgotPassword(idUser, forgotPasswordRequest, "/"+idUser+"/forgot-password");
+                                            @RequestBody ForgotPasswordRequest forgotPasswordRequest,
+                                            HttpServletRequest request){
+        return authentication.forgotPassword(idUser, forgotPasswordRequest, request.getServletPath());
     }
 
 }

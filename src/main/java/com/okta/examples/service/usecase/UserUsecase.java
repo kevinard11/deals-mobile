@@ -1,6 +1,6 @@
 package com.okta.examples.service.usecase;
 
-import com.okta.examples.adapter.dto.request.RegisterRequest;
+import com.okta.examples.model.request.RegisterRequest;
 import com.okta.examples.model.User;
 import com.okta.examples.repository.MyBatisRepository;
 import org.mybatis.spring.annotation.MapperScan;
