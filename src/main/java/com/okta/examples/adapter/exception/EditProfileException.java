@@ -5,8 +5,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class EditProfileException extends ResponseStatusException {
 
-    public EditProfileException(String message, HttpStatus status) {
-        super(status,message);
+    public EditProfileException(String message, HttpStatus statuss) {
+        super(statuss,message);
         System.out.println(message);
     }
 }

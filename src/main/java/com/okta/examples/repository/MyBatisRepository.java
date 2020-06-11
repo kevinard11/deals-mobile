@@ -71,13 +71,16 @@ public interface MyBatisRepository {
     @Update(logoutToken)
     void logoutToken (@Param("id") String id, @Param("token") String token);
 
-    final String startSession = "INSERT session(id_user, id_session, created_at, valid_date, status) " +
-                                "values(#{idUser}, #{idSession}, now(), date_add(now(), interval 7 day), 1)";
+
+    // Mobile Domain
+
+    final String startSession = "INSERT session(id_user, id_session, valid_date, status) " +
+                                "values(#{idUser}, #{idSession}, date_add(now(), interval 7 day), 1)";
     @Insert(startSession)
     void startSession(@Param("idUser") String idUser, @Param("idSession") String idSession);
 
-    final String checkSession = "SELECT id_session from session where id_user = #{idUser} and valid_date > now() " +
-                                "and status = 1";
+    final String checkSession = "SELECT id_session from session where id_user = #{idUser}" +
+                                "and status = 1 order by created_at desc limit 1";
     @Select(checkSession)
     @Results(value = {
             @Result(property = "idSession", column = "id_session")
@@ -87,4 +90,13 @@ public interface MyBatisRepository {
     final String destroySession = "UPDATE session set status = 0 where id_user = #{idUser}";
     @Update(destroySession)
     void destroySession(@Param("idUser") String idUser);
+
+    final String checkSessionExpired = "SELECT count(*) as amount from session where id_user = #{idUser} " +
+                                        "and id_session = #{idSession} and valid_date > now()";
+    @Select(checkSessionExpired)
+    @Results(value = {
+            @Result(column = "amount")
+    })
+    Integer checkSessionExpired(@Param("idUser") String idUser, @Param("idSession") String idSession);
+
 }

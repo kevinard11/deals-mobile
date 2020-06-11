@@ -4,6 +4,7 @@ import com.okta.examples.adapter.dto.request.ForgotPasswordRequest;
 import com.okta.examples.adapter.dto.request.LoginRequest;
 import com.okta.examples.adapter.dto.request.RegisterRequest;
 import com.okta.examples.adapter.exception.*;
+import com.okta.examples.adapter.exception.test.DealsStatus;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,20 +20,16 @@ public class AuthenticationValidation {
     private final String regex_name = "^(?=.{1,9}[a-zA-Z\\'\\-][ ])(?=.*[\\s])(?!.*[0-9])(?!.*[!@#$%^&*]).{3,20}$|^(?=.*[a-zA-Z\\'\\-])(?!.*[0-9])(?!.*[!@#$%^&*]).{3,10}$";
     private final String regex_otp = "[0-9]{4}";
 
-    public void register(RegisterRequest registerRequest){
+    public void register(RegisterRequest registerRequest) {
 
         if (registerRequest.getEmail() == null || registerRequest.getPhoneNumber() == null ||
             registerRequest.getPassword()== null || registerRequest.getFirst_name() == null ||
             registerRequest.getConfirmPassword() == null){
-            throw new RegisterException("Please fill in all the forms.", HttpStatus.BAD_REQUEST);
-        }
-
-        if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())){
-            throw new RegisterException("Password is missed match.", HttpStatus.BAD_REQUEST);
+            throw new RegisterException(DealsStatus.FILL_ALL_FORMS);
         }
 
         if (!Pattern.matches(regex_name, registerRequest.getFirst_name())){
-            throw new RegisterException("Name is invalid.", HttpStatus.BAD_REQUEST);
+            throw new RegisterException(DealsStatus.NAME_INVALID);
         }
         if (!Pattern.matches(regex_email, registerRequest.getEmail())) {
             throw new RegisterException("Email is invalid.", HttpStatus.BAD_REQUEST);
@@ -45,6 +42,10 @@ public class AuthenticationValidation {
         if(!Pattern.matches(regex_telephone, registerRequest.getPhoneNumber())){
             throw new RegisterException("Phone Number is invalid.", HttpStatus.BAD_REQUEST);
         }
+
+        if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())){
+            throw new RegisterException("Password is missed match.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     public void login(LoginRequest loginRequest){
@@ -53,18 +54,20 @@ public class AuthenticationValidation {
             throw new LoginException("Please fill in all the forms.", HttpStatus.BAD_REQUEST);
         }
 
-        if (!Pattern.matches(regex_password, loginRequest.getPassword())) {
-            throw new LoginException("Phone Number is invalid.", HttpStatus.BAD_REQUEST);
-        }
-
         if(!Pattern.matches(regex_telephone, loginRequest.getPhoneNumber())){
             throw new LoginException("Phone Number is invalid.", HttpStatus.BAD_REQUEST);
         }
+
+        if (!Pattern.matches(regex_password, loginRequest.getPassword())) {
+            throw new LoginException("Password is invalid.", HttpStatus.BAD_REQUEST);
+        }
+
+
     }
 
     public void requestOtp(JSONObject data){
 
-        if (data.get("telephone") == null){
+        if (data.get("phoneNumber") == null){
             throw new RequestOtpException("Please fill in all the forms.", HttpStatus.BAD_REQUEST);
         }
 
@@ -78,6 +81,7 @@ public class AuthenticationValidation {
         if (data.get("otp") == null){
             throw new MatchOtpException("Please fill in all the forms.", HttpStatus.BAD_REQUEST);
         }
+
         if(!Pattern.matches(regex_otp, ""+data.get("otp"))){
             throw new MatchOtpException("OTP is invalid.", HttpStatus.BAD_REQUEST);
         }

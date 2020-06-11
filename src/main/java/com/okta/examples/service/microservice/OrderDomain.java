@@ -16,7 +16,7 @@ public class OrderDomain {
     @Autowired
     private Template template;
 
-    private final String api = "https://72dc6c5307d3.ngrok.io";
+    private final String api = "https://d8ac83fbd1c8.ngrok.io";
 
     public ResponseEntity<?> createOrder(String idUser, JSONObject data){
         return template.post(api+"/api/user/"+idUser+"/transaction/voucher", data);
@@ -30,12 +30,22 @@ public class OrderDomain {
         return template.post(api+"/api/user/"+idUser+"/transaction/topup", data);
     }
 
-    public ResponseEntity<?> transactionHistory(String idUser, String category, String filterStart, String filterEnd, String page){
+    public ResponseEntity<?> transactionHistory(String idUser, String category, String filterStart, String filterEnd, Integer page){
+        String apiOrder = "";
+        if (category != null){
+            apiOrder += "category="+category;
+        }
+        if (filterStart != null){
+            apiOrder += "&filter-start-date="+filterStart;
+        }
+        if (filterEnd != null){
+            apiOrder += "&filter-end-date="+filterEnd;
+        }
+        if (page != null){
+            apiOrder += "&page="+page;
+        }
         return template.get(api+"/api/user/"+idUser+"/transaction" +
-                            "?category=" +category+"&" +
-                            "filter-start-date=" +filterStart +"&" +
-                            "filter-end-date=" +filterEnd+"&" +
-                            "page=" +page);
+                            "?"+apiOrder);
     }
 
     public ResponseEntity<?> transactionDetail(String idUser, String idTransaction){

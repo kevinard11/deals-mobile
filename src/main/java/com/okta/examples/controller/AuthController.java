@@ -19,10 +19,10 @@ public class AuthController {
     AuthenticationService authentication;
 
 
-    @GetMapping("/signin")
-    public ResponseEntity<?> siginn(HttpServletRequest request){
-        request.getSession().invalidate();
-        return new ResponseEntity<>(request.getSession().getId(), HttpStatus.OK);
+    @GetMapping("/test")
+    public ResponseEntity<?> siginin(){
+//        return new ResponseEntity<>(result.getBody(), result.getStatusCode());
+        return authentication.test(null);
     }
 
     @GetMapping("/")
@@ -37,7 +37,7 @@ public class AuthController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest){
         return new ResponseEntity<>(authentication.register(registerRequest), HttpStatus.CREATED);
     }
 

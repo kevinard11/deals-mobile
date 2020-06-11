@@ -55,7 +55,7 @@ public class UserController {
     public ResponseEntity<?> createOrderVoucher(@PathVariable("id_user") String idUser,
                                                 @RequestBody JSONObject data,
                                                 HttpServletRequest request){
-        sessionValidation.request(idUser, request);
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(transactionService.createOrderVoucher(idUser, data), HttpStatus.CREATED);
     }
 
@@ -63,7 +63,7 @@ public class UserController {
     public ResponseEntity<?> payOrderVoucher(@PathVariable("idUser") String idUser,
                                              @RequestBody JSONObject data,
                                              HttpServletRequest request){
-        sessionValidation.request(idUser, request);
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(transactionService.payOrderVoucher(idUser, data), HttpStatus.OK);
     }
 
@@ -77,12 +77,12 @@ public class UserController {
 
     @GetMapping(value = "/{idUser}/transaction")
     public ResponseEntity<?> transactionHistory(@PathVariable("idUser") String idUser,
-                                                @RequestParam("category") String category,
-                                                @RequestParam("filter-start-date") String filterStart,
-                                                @RequestParam("filter-end-date") String filterEnd,
-                                                @RequestParam("page") String page,
+                                                @RequestParam(value = "category", required = false) String category,
+                                                @RequestParam(value = "filter-start-date", required = false) String filterStart,
+                                                @RequestParam(value = "filter-end-date", required = false) String filterEnd,
+                                                @RequestParam(value = "page", required = false) Integer page,
                                                 HttpServletRequest request){
-        sessionValidation.request(idUser, request);
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(transactionService.transactionHistory(idUser, category, filterStart, filterEnd, page),
                                     HttpStatus.OK);
     }
@@ -91,7 +91,7 @@ public class UserController {
     public ResponseEntity<?> transactionDetail(@PathVariable("idUser") String idUser,
                                                @PathVariable("idTransaction") String idTransaction,
                                                HttpServletRequest request){
-        sessionValidation.request(idUser, request);
+//        sessionValidation.request(idUser, request);
         return new ResponseEntity<>(transactionService.transactionDetail(idUser, idTransaction),
                 HttpStatus.OK);
     }

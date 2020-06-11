@@ -5,11 +5,13 @@ import com.okta.examples.adapter.dto.request.LoginRequest;
 import com.okta.examples.adapter.dto.request.RegisterRequest;
 import com.okta.examples.adapter.exception.*;
 import com.okta.examples.adapter.wrapper.Parser;
+import com.okta.examples.adapter.wrapper.ResponseFailed;
 import com.okta.examples.adapter.wrapper.ResponseSuccess;
 import com.okta.examples.service.microservice.MemberDomain;
 import com.okta.examples.service.validation.AuthenticationValidation;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +30,7 @@ public class AuthenticationService {
     @Autowired
     AuthenticationValidation validate;
 
-    public JSONObject register(RegisterRequest registerRequest){
+    public JSONObject register(RegisterRequest registerRequest) {
 
         //Register validation
         System.out.println("Register Validation. " +new Date());
@@ -86,7 +88,7 @@ public class AuthenticationService {
 
         //Create user
         JSONObject user = (JSONObject) jsonMember.get("user");
-        String idUser = ""+user.get("idUser");
+        String idUser = ""+user.get("id");
         String idSession= UUID.randomUUID().toString();
 
         //Check user session
@@ -146,7 +148,7 @@ public class AuthenticationService {
                 "/api/auth/request-otp");
     }
 
-    public JSONObject matchOtp(String idUser, JSONObject data){
+    public ResponseEntity<?> matchOtp(String idUser, JSONObject data){
 
         // Match otp validation
         validate.matchOtp(data);
@@ -158,15 +160,18 @@ public class AuthenticationService {
 
         JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
         String message = ""+ jsonMember.get("message");
+        Integer status = Integer.parseInt(""+jsonMember.get("status"));
 
         //Check response
         if (!fromMember.getStatusCode().is2xxSuccessful()){
-            throw new MatchOtpException(message, fromMember.getStatusCode());
+            return ResponseFailed.wrapResponseFailed(null, message, status,
+                                                    fromMember.getStatusCode(), "/match-otp");
         }
 
         //Wrap response
-        return ResponseSuccess.wrap200(null, "OTP Match.",
-                "/api/auth/"+idUser+"/match-otp");
+        return ResponseSuccess.wrapResponseSuccess(null, "OTP Match", 100, HttpStatus.OK, "/match-otp");
+//        return ResponseSuccess.wrap200(null, "OTP Match.",
+//                "/api/auth/"+idUser+"/match-otp");
     }
 
     public JSONObject forgotPassword(String idUser, ForgotPasswordRequest forgotPasswordRequest){
@@ -190,6 +195,14 @@ public class AuthenticationService {
         //Wrap response
         return ResponseSuccess.wrap200(null, "Change Password success.",
                 "/api/auth/"+idUser+"/forgot-password");
+    }
+
+    public ResponseEntity<?> test(JSONObject data){
+        if (data == null){
+            return ResponseFailed.wrapResponseFailed(null, "You are not authorized",
+                                                    201, HttpStatus.UNAUTHORIZED, "/test");
+        }
+        return ResponseSuccess.wrapResponseSuccess(null, "Success", 100, HttpStatus.OK, "/sda");
     }
 
 }

@@ -2,6 +2,8 @@ package com.okta.examples.adapter.wrapper;
 
 import com.okta.examples.adapter.clock.Timestamps;
 import org.json.simple.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 public class ResponseSuccess {
     public static JSONObject wrap200(Object data, String message, String path){
@@ -26,5 +28,15 @@ public class ResponseSuccess {
         return json;
     }
 
+    public static ResponseEntity<?> wrapResponseSuccess(Object data, String message, int status, HttpStatus httpStatus, String path){
+        JSONObject json = new JSONObject();
+        json.put("timestamp", Timestamps.getNow());
+        json.put("status", status);
+        json.put("data", data);
+        json.put("message", message);
+        json.put("path", path);
+
+        return new ResponseEntity<>(json, httpStatus);
+    }
 
 }

@@ -3,7 +3,6 @@ package com.okta.examples.service.usecase;
 import com.okta.examples.adapter.dto.request.EditProfileRequest;
 import com.okta.examples.adapter.exception.EditProfileException;
 import com.okta.examples.adapter.exception.GetProfileException;
-import com.okta.examples.adapter.exception.LogoutException;
 import com.okta.examples.adapter.wrapper.Parser;
 import com.okta.examples.adapter.wrapper.ResponseSuccess;
 import com.okta.examples.service.microservice.MemberDomain;
@@ -74,16 +73,16 @@ public class UserService {
     public JSONObject logout(String idUser){
 
         //Logout in member domain
-        ResponseEntity<?> fromMember = member.logout(idUser);
-        System.out.println("Logout. Receive data from member domain :"+ fromMember.getBody().toString());
-
-        JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
-        String message = ""+ jsonMember.get("message");
-
-        //Check response
-        if (!fromMember.getStatusCode().is2xxSuccessful()){
-            throw new LogoutException(message, fromMember.getStatusCode());
-        }
+//        ResponseEntity<?> fromMember = member.logout(idUser);
+        System.out.println("Logout.");
+//
+//        JSONObject jsonMember = Parser.parseJSON(fromMember.getBody().toString());
+//        String message = ""+ jsonMember.get("message");
+//
+//        //Check response
+//        if (!fromMember.getStatusCode().is2xxSuccessful()){
+//            throw new LogoutException(message, fromMember.getStatusCode());
+//        }
 
         //Destroy session
         System.out.println("Destroy Session for id :" + idUser);

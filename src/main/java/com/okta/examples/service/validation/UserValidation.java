@@ -38,6 +38,7 @@ public class UserValidation {
 
             if (editProfileRequest.getOldPassword() != null && editProfileRequest.getNewPassword() != null &&
                     editProfileRequest.getConfirmPassword() != null){
+
                 content = true;
                 if (!Pattern.matches(regex_password, editProfileRequest.getOldPassword())){
                     throw new EditProfileException("Password is invalid.", HttpStatus.BAD_REQUEST);

@@ -16,7 +16,7 @@ public class VoucherDomain {
     @Autowired
     private Template template;
 
-    private final String api = "http://voucher-service.herokuapp.com/api";
+    private final String api = "https://voucherservice.burrow.io/api";
 
     public ResponseEntity<?> getVoucher(){
         return template.get(api+"/admin/filterByStatus-voucher?filterByStatus=false");
@@ -48,7 +48,6 @@ public class VoucherDomain {
                 "?sortBy=" +name+"&" +
                 "page=" +page);
     }
-
 
     public ResponseEntity<?> createMerchant(String idUser, String idMerchant, CreateMerchant createMerchant){
         return template.post(api+"/admin/"+idUser+"/merchant/"+idMerchant+"/vouchers", createMerchant);

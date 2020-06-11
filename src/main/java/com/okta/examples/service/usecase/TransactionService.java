@@ -5,7 +5,6 @@ import com.okta.examples.adapter.wrapper.Parser;
 import com.okta.examples.adapter.wrapper.ResponseSuccess;
 import com.okta.examples.service.microservice.OrderDomain;
 import com.okta.examples.service.validation.TransactionValidation;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -79,7 +78,7 @@ public class TransactionService {
                 "/api/user/"+idUser+"/transaction/topup");
     }
 
-    public JSONObject transactionHistory(String idUser, String category, String filterStart, String filterEnd, String page){
+    public JSONObject transactionHistory(String idUser, String category, String filterStart, String filterEnd, Integer page){
 
         ResponseEntity<?> fromOrder = order.transactionHistory(idUser, category, filterStart, filterEnd, page);
         System.out.println("Transaction History. Receive data from order domain :"+ fromOrder.getBody().toString());
@@ -91,7 +90,7 @@ public class TransactionService {
             throw new MatchOtpException(message, fromOrder.getStatusCode());
         }
 
-        JSONArray order = (JSONArray) jsonOrder.get("data");
+        JSONObject order = (JSONObject) jsonOrder.get("data");
 
         return ResponseSuccess.wrap200(order, "Transaction history are successfully collected.",
                 "/api/user/"+idUser+"/transaction");
@@ -109,7 +108,7 @@ public class TransactionService {
             throw new MatchOtpException(message, fromOrder.getStatusCode());
         }
 
-        JSONArray order = (JSONArray) jsonOrder.get("data");
+        JSONObject order = (JSONObject) jsonOrder.get("data");
 
         return ResponseSuccess.wrap200(order, "Transaction history are successfully collected.",
                 "/api/user/"+idUser+"/transaction/"+idTransaction);
