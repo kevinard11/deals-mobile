@@ -20,8 +20,7 @@ public class AuthenticationValidationTest {
 
         assertTrue(authenticationValidation.register(registerRequest, "/register").getStatusCode().is2xxSuccessful());
 
-        registerRequest.setFirst_name("kevin");
-        registerRequest.setLast_name("ard");
+        registerRequest.setName("kevin");
         registerRequest.setEmail("kevinard11@gmail.com");
         registerRequest.setPassword("P@ssw0rd");
         registerRequest.setConfirmPassword("P@ssw0rd");
