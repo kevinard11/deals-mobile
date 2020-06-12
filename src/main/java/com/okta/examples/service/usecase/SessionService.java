@@ -1,9 +1,10 @@
 package com.okta.examples.service.usecase;
 
 import com.okta.examples.repository.MyBatisRepository;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+@MapperScan("com.okta.examples.repository")
 @Service
 public class SessionService {
 

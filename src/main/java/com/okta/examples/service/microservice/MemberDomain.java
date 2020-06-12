@@ -24,14 +24,14 @@ public class MemberDomain {
     @Autowired
     private Template template;
 
-    private final String api = "http://localhost:8080";
+    private final String api = "http://localhost:8083";
 
     public ResponseEntity<?> register(RegisterRequest registerRequest, String path){
        return template.post(api+path, registerRequest);
     }
 
     public ResponseEntity<?> login(LoginRequest loginRequest){
-        return template.post(api+"/login1", loginRequest);
+        return template.post(api+"/api/auth/login", loginRequest);
     }
 
     public ResponseEntity<?> requestOtp(JSONObject data){

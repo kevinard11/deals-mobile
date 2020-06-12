@@ -1,12 +1,8 @@
 package com.okta.examples.service.validation;
 
-import com.okta.examples.adapter.status.DealsStatus;
-import com.okta.examples.model.response.ResponseFailed;
-import com.okta.examples.model.response.ResponseSuccess;
 import com.okta.examples.repository.MyBatisRepository;
 import com.okta.examples.service.usecase.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,51 +16,51 @@ public class SessionValidation {
     @Autowired
     SessionService sessionService;
 
-    public ResponseEntity<?> request(String idUser, HttpServletRequest request){
+    public boolean request(String idUser, HttpServletRequest request){
 
         String header = request.getHeader("Authorization");
 
         if (header == null || !header.startsWith("Bearer ")){
-            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
+            return false;
         }
 
         String session = header.substring(7);
         String idSession = sessionService.checkSession(idUser);
 
         if (idSession == null){
-            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
+            return false;
         }
 
         if(!idSession.equals(session)){
-            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
+            return false;
         }
 
         if (sessionService.checkSessionExpired(idUser, idSession) == 0){
             sessionService.destroySession(idUser);
-            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
+            return false;
         }
 
-        return ResponseSuccess.wrapOk();
+        return true;
     }
 
-    public ResponseEntity<?> requestVoucher(HttpServletRequest request){
+    public boolean requestVoucher(HttpServletRequest request){
 
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")){
-            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
+            return false;
         }
 
         String idSession = header.substring(7);
         if (sessionService.checkSessionWithoutId(idSession) == 0){
-            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
+            return false;
         }
 
         if (sessionService.checkSessionExpiredWithoutId(idSession) == 0){
             sessionService.destroySessionWithoutId(idSession);
-            return ResponseFailed.wrapResponse(DealsStatus.NOT_AUTHORIZED, request.getServletPath());
+            return false;
         }
 
-        return ResponseSuccess.wrapOk();
+        return true;
     }
 
 }

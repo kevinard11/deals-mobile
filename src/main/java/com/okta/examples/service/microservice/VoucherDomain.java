@@ -1,6 +1,6 @@
 package com.okta.examples.service.microservice;
 
-import com.okta.examples.model.request.CreateMerchant;
+import com.okta.examples.model.request.CreateMerchantRequest;
 import com.okta.examples.adapter.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,18 +16,15 @@ public class VoucherDomain {
     @Autowired
     private Template template;
 
-    private final String api = "https://voucher-service.herokuapp.com/api";
+    private final String api = "http://localhost:8081/api";
 
     public ResponseEntity<?> getVoucher(){
         return template.get(api+"/admin/filterByStatus-voucher?filterByStatus=false");
     }
 
     public ResponseEntity<?> getAllVoucher(String page, String path){
-        return template.get(api+"/user/show-all-voucher");
-    }
-
-    public ResponseEntity<?> voucherDetail(String idVoucher){
-        return template.get(api+"/admin/voucher-detail-voucher/"+idVoucher);
+        return template.get(api+"/user/show-all-voucher" +
+                "?page=" +page);
     }
 
     public ResponseEntity<?> filterVoucher(String merchantCategory, String page){
@@ -48,8 +45,8 @@ public class VoucherDomain {
                 "page=" +page);
     }
 
-    public ResponseEntity<?> createMerchant(String idUser, String idMerchant, CreateMerchant createMerchant){
-        return template.post(api+"/admin/"+idUser+"/merchant/"+idMerchant+"/vouchers", createMerchant);
+    public ResponseEntity<?> createMerchant(String idUser, String idMerchant, CreateMerchantRequest createMerchantRequest){
+        return template.post(api+"/admin/"+idUser+"/merchant/"+idMerchant+"/vouchers", createMerchantRequest);
     }
 
     public ResponseEntity<?> getAllVoucherAdmin(String page){
@@ -57,9 +54,13 @@ public class VoucherDomain {
                 "?page=" +page);
     }
 
+    public ResponseEntity<?> voucherDetail(String idVoucher){
+        return template.get(api+"/admin/voucher-detail-voucher/"+idVoucher);
+    }
+
     public ResponseEntity<?> filterVoucherAdmin(String merchantCategory, String page){
-        return template.get(api+"/admin/filter-voucher" +
-                "?merchantCategory=" +merchantCategory+"&" +
+        return template.get(api+"/admin/filterByStatus-voucher" +
+                "?filterByStatus=" +merchantCategory+"&" +
                 "page=" +page);
     }
 

@@ -1,10 +1,10 @@
 package com.okta.examples.controller;
 
-import com.okta.examples.model.request.CreateMerchant;
+import com.okta.examples.model.request.CreateMerchantRequest;
+import com.okta.examples.model.response.ResponseFailed;
 import com.okta.examples.service.usecase.AdminService;
 import com.okta.examples.service.validation.SessionValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,48 +23,60 @@ public class AdminController {
     @PostMapping(value = "/{idUser}/merchant/{idMerchant}/vouchers")
     public ResponseEntity<?> createMerchant(@PathVariable("idUser") String idUser,
                                             @PathVariable("idMerchant") String idMerchant,
-                                            @RequestBody CreateMerchant createMerchant,
+                                            @RequestBody CreateMerchantRequest createMerchantRequest,
                                             HttpServletRequest request){
-//        sessionValidation.request(idUser, request);
-        return new ResponseEntity<>(adminService.createMerchant(idUser, idMerchant, createMerchant), HttpStatus.CREATED);
+        if (!sessionValidation.requestVoucher(request)){
+            return ResponseFailed.unAuthorized(request.getServletPath());
+        }
+        return adminService.createMerchant(idUser, idMerchant, createMerchantRequest, request.getServletPath());
     }
 
     @GetMapping("/show-all-voucher")
     public ResponseEntity<?> getAllVoucher(@RequestParam(value = "page", required = false) String page,
                                            HttpServletRequest request) {
-        sessionValidation.requestVoucher(request);
-        return new ResponseEntity<>(adminService.getAllVoucher(page), HttpStatus.OK);
+        if (!sessionValidation.requestVoucher(request)){
+            return ResponseFailed.unAuthorized(request.getServletPath());
+        }
+        return adminService.getAllVoucher(page, request.getServletPath());
     }
 
-    @GetMapping("/filter-voucher")
-    public ResponseEntity<?> filterVoucher(@RequestParam("merchantCategory") String merchantCategory,
+    @GetMapping("/filterByStatus-voucher")
+    public ResponseEntity<?> filterVoucher(@RequestParam("filterByStatus") String merchantCategory,
                                            @RequestParam("page") String page,
                                            HttpServletRequest request){
-        sessionValidation.requestVoucher(request);
-        return new ResponseEntity<>(adminService.filterVoucher(merchantCategory, page), HttpStatus.OK);
+        if (!sessionValidation.requestVoucher(request)){
+            return ResponseFailed.unAuthorized(request.getServletPath());
+        }
+        return adminService.filterVoucher(merchantCategory, page, request.getServletPath());
     }
 
     @GetMapping("/findByMerchantName-voucher")
     public ResponseEntity<?> searchVoucher(@RequestParam("merchantName") String merchantName,
                                            @RequestParam("page") String page,
                                            HttpServletRequest request){
-        sessionValidation.requestVoucher(request);
-        return new ResponseEntity<>(adminService.searchVoucher(merchantName, page), HttpStatus.OK);
+        if (!sessionValidation.requestVoucher(request)){
+            return ResponseFailed.unAuthorized(request.getServletPath());
+        }
+        return adminService.searchVoucher(merchantName, page, request.getServletPath());
     }
 
     @GetMapping("/sort-voucher")
     public ResponseEntity<?> sortVoucher(@RequestParam("sortBy") String name,
                                          @RequestParam("page") String page,
                                          HttpServletRequest request){
-        sessionValidation.requestVoucher(request);
-        return new ResponseEntity<>(adminService.sortVoucher(name, page), HttpStatus.OK);
+        if (!sessionValidation.requestVoucher(request)){
+            return ResponseFailed.unAuthorized(request.getServletPath());
+        }
+        return adminService.sortVoucher(name, page, request.getServletPath());
     }
 
     @GetMapping("/voucher-detail-voucher/{idVoucher}")
     public ResponseEntity<?> voucherDetail(@PathVariable("idVoucher") String idVoucher,
                                            HttpServletRequest request){
-        sessionValidation.requestVoucher(request);
-        return new ResponseEntity<>(adminService.voucherDetail(idVoucher), HttpStatus.OK);
+        if (!sessionValidation.requestVoucher(request)){
+            return ResponseFailed.unAuthorized(request.getServletPath());
+        }
+        return adminService.voucherDetail(idVoucher, request.getServletPath());
     }
 
 }

@@ -32,4 +32,17 @@ public class ResponseFailed {
 
         return new ResponseEntity<>(json, dealsStatus.getStatus());
     }
+
+    public static ResponseEntity<JSONObject> unAuthorized(String path){
+        JSONObject json = new JSONObject();
+        DealsStatus dealsStatus = DealsStatus.NOT_AUTHORIZED;
+        json.put("timestamp", Timestamps.getNow());
+        json.put("status", dealsStatus.getValue());
+        json.put("data", null);
+        json.put("message", dealsStatus.getMessage());
+        json.put("path", path);
+
+        return new ResponseEntity<>(json, dealsStatus.getStatus());
+    }
+
 }

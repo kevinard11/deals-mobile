@@ -52,8 +52,10 @@ public class UserService {
     public ResponseEntity<?> editProfile(String idUser, EditProfileRequest editProfileRequest, String path){
 
         //Edit profile validation
-        validate.editProfile(editProfileRequest, path);
-
+        ResponseEntity<?> check = validate.editProfile(editProfileRequest, path);
+        if (!check.getStatusCode().is2xxSuccessful()){
+            return check;
+        }
         //Edit profile validation in member domain
         System.out.println("Edit Profile. Send data to member domain : "+ Parser.toJsonString(editProfileRequest));
         ResponseEntity<?> fromMember = member.editProfile(idUser, editProfileRequest);

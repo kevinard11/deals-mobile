@@ -22,7 +22,10 @@ public class TransactionService {
 
     public ResponseEntity<?> createOrderVoucher(String idUser, JSONObject data, String path){
 
-        validate.createOrder(data, path);
+        ResponseEntity<?> check = validate.createOrder(data, path);
+        if (!check.getStatusCode().is2xxSuccessful()){
+            return check;
+        }
 
         System.out.println("Create Order. Send data to order domain : "+ Parser.toJsonString(data));
         ResponseEntity<?> fromOrder = order.createOrder(idUser, data);
@@ -43,7 +46,10 @@ public class TransactionService {
 
     public ResponseEntity<?> payOrderVoucher(String idUser, JSONObject data, String path){
 
-        validate.payOrder(data, path);
+        ResponseEntity<?> check = validate.payOrder(data, path);
+        if (!check.getStatusCode().is2xxSuccessful()){
+            return check;
+        }
 
         System.out.println("Pay Order. Send data to order domain : "+ Parser.toJsonString(data));
         ResponseEntity<?> fromOrder = order.payOrder(idUser, data);
@@ -64,7 +70,10 @@ public class TransactionService {
 
     public ResponseEntity<?> payTopup(String idUser, JSONObject data, String path){
 
-        validate.payTopup(data, path);
+        ResponseEntity<?> check = validate.payTopup(data, path);
+        if (!check.getStatusCode().is2xxSuccessful()){
+            return check;
+        }
 
         System.out.println("Pay TOP UP. Send data to order domain : "+ Parser.toJsonString(data));
         ResponseEntity<?> fromOrder = order.payTopup(idUser, data);

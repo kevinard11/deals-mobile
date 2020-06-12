@@ -13,27 +13,16 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
+@RequestMapping(value = "/api/user")
 public class AuthController {
 
     @Autowired
     AuthenticationService authentication;
 
 
-    @GetMapping("/test/{idUser}/hai/{idTransaction}")
-    public ResponseEntity<?> siginin(HttpServletRequest request){
-//        return new ResponseEntity<>(result.getBody(), result.getStatusCode());
-        return authentication.test(null, request.getServletPath());
-    }
-
     @GetMapping("/")
     public ResponseEntity<?> welcome(HttpServletRequest request){
         return new ResponseEntity<>("Welcome. Your session id : "+request.getSession().getId(), HttpStatus.OK);
-    }
-
-    @GetMapping("/signout")
-    public ResponseEntity<?> signout(HttpServletRequest request){
-        request.getSession().invalidate();
-        return new ResponseEntity<>("log out", HttpStatus.OK);
     }
 
     @PostMapping(value = "/register")

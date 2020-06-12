@@ -1,6 +1,6 @@
 package com.okta.examples.model.request;
 
-public class CreateMerchant {
+public class CreateMerchantRequest {
 
     private String voucherName;
     private Double voucherPrice;
