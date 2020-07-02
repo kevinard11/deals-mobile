@@ -16,7 +16,7 @@ public class OrderDomain {
     @Autowired
     private Template template;
 
-    private final String api = "http://localhost:8889";
+    private final String api = "http://localhost:8084";
 
     public ResponseEntity<?> createOrder(String idUser, JSONObject data){
         return template.post(api+"/api/user/"+idUser+"/transaction/voucher", data);
@@ -30,7 +30,7 @@ public class OrderDomain {
         return template.post(api+"/api/user/"+idUser+"/transaction/topup", data);
     }
 
-    public ResponseEntity<?> transactionHistory(String idUser, String category, String filterStart, String filterEnd, Integer page, String path){
+    public ResponseEntity<?> transactionHistory(String idUser, String category, String filterStart, String filterEnd, String page, String path){
 
         String apiOrder = "";
         if (category != null){

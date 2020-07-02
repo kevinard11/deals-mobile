@@ -1,7 +1,7 @@
 package com.okta.examples.service.microservice;
 
-import com.okta.examples.model.request.CreateMerchantRequest;
 import com.okta.examples.adapter.template.Template;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,10 +17,7 @@ public class VoucherDomain {
     private Template template;
 
     private final String api = "http://localhost:8081/api";
-
-    public ResponseEntity<?> getVoucher(){
-        return template.get(api+"/admin/filterByStatus-voucher?filterByStatus=false");
-    }
+    private final String apis = "http://localhost:8081";
 
     public ResponseEntity<?> getAllVoucher(String page, String path){
         return template.get(api+"/user/show-all-voucher" +
@@ -45,8 +42,8 @@ public class VoucherDomain {
                 "page=" +page);
     }
 
-    public ResponseEntity<?> createMerchant(String idUser, String idMerchant, CreateMerchantRequest createMerchantRequest){
-        return template.post(api+"/admin/"+idUser+"/merchant/"+idMerchant+"/vouchers", createMerchantRequest);
+    public ResponseEntity<?> createMerchant(String idUser, String idMerchant, JSONObject data){
+        return template.post(api+"/admin/"+idUser+"/merchant/"+idMerchant+"/vouchers", data);
     }
 
     public ResponseEntity<?> getAllVoucherAdmin(String page){
@@ -74,5 +71,9 @@ public class VoucherDomain {
         return template.get(api+"/admin/sort-voucher" +
                 "?sortBy=" +name+"&" +
                 "page=" +page);
+    }
+
+    public ResponseEntity<?> updateVoucher(String idVoucher, JSONObject data, String path){
+        return template.put(api+"/admin/update-status-voucher/"+idVoucher+"/restock", data);
     }
 }

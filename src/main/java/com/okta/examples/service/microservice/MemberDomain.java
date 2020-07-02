@@ -24,10 +24,10 @@ public class MemberDomain {
     @Autowired
     private Template template;
 
-    private final String api = "http://localhost:8083";
+    private final String api = "http://localhost:8080";
 
     public ResponseEntity<?> register(RegisterRequest registerRequest, String path){
-       return template.post(api+path, registerRequest);
+       return template.post(api+"/api/auth/register", registerRequest);
     }
 
     public ResponseEntity<?> login(LoginRequest loginRequest){
@@ -42,7 +42,7 @@ public class MemberDomain {
         return template.post(api+"/api/auth/"+idUser+"/match-otp", data);
     }
 
-    public ResponseEntity<?> forgotPassword(String idUser, ForgotPasswordRequest forgotPasswordRequest){
+    public ResponseEntity<?> forgotPassword(String idUser, JSONObject forgotPasswordRequest){
         return template.post(api+"/api/auth/"+idUser+"/forgot-password", forgotPasswordRequest);
     }
 
@@ -54,8 +54,8 @@ public class MemberDomain {
         return template.put(api+"/api/user/"+idUser, editProfileRequest);
     }
 
-    public ResponseEntity<?> logout(String idUser){
-        return template.post(api+"/api/user/"+idUser+"/logout", null);
-    }
+//    public ResponseEntity<?> logout(String idUser){
+//        return template.post(api+"/api/user/"+idUser+"/logout", null);
+//    }
 
 }

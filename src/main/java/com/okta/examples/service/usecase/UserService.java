@@ -1,7 +1,7 @@
 package com.okta.examples.service.usecase;
 
 import com.okta.examples.adapter.parser.Parser;
-import com.okta.examples.adapter.status.DealsStatus;
+import com.okta.examples.model.status.DealsStatus;
 import com.okta.examples.model.request.EditProfileRequest;
 import com.okta.examples.model.response.ResponseFailed;
 import com.okta.examples.model.response.ResponseSuccess;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @Service
@@ -26,7 +27,7 @@ public class UserService {
     @Autowired
     SessionService sessionService;
 
-    public ResponseEntity<?> getProfile(String idUser, String path){
+    public ResponseEntity<JSONObject> getProfile(String idUser, String path){
 
         //Get profil in member domain
         ResponseEntity<?> fromMember = member.getProfile(idUser);
@@ -38,6 +39,9 @@ public class UserService {
 
         //Check response
         if (!fromMember.getStatusCode().is2xxSuccessful()){
+            if (fromMember.getBody().toString().toLowerCase().contains("connection refused")){
+                return ResponseFailed.wrapResponse(DealsStatus.REQUEST_TIME_OUT, path);
+            }
             return ResponseFailed.wrapResponseFailed(message, status, fromMember.getStatusCode(), path);
         }
 
@@ -49,13 +53,13 @@ public class UserService {
 //                "/api/user/"+idUser);
     }
 
-    public ResponseEntity<?> editProfile(String idUser, EditProfileRequest editProfileRequest, String path){
+    public ResponseEntity<JSONObject> editProfile(String idUser, EditProfileRequest editProfileRequest, String path){
 
         //Edit profile validation
-        ResponseEntity<?> check = validate.editProfile(editProfileRequest, path);
-        if (!check.getStatusCode().is2xxSuccessful()){
-            return check;
-        }
+//        ResponseEntity<?> check = validate.editProfile(editProfileRequest, path);
+//        if (!check.getStatusCode().is2xxSuccessful()){
+//            return check;
+//        }
         //Edit profile validation in member domain
         System.out.println("Edit Profile. Send data to member domain : "+ Parser.toJsonString(editProfileRequest));
         ResponseEntity<?> fromMember = member.editProfile(idUser, editProfileRequest);
@@ -67,6 +71,9 @@ public class UserService {
 
         //Check response
         if (!fromMember.getStatusCode().is2xxSuccessful()){
+            if (fromMember.getBody().toString().toLowerCase().contains("connection refused")){
+                return ResponseFailed.wrapResponse(DealsStatus.REQUEST_TIME_OUT, path);
+            }
             return ResponseFailed.wrapResponseFailed(message, status, fromMember.getStatusCode(), path);
         }
 
@@ -78,7 +85,7 @@ public class UserService {
 //                "/api/user/"+idUser);
     }
 
-    public ResponseEntity<?> logout(String idUser, String path){
+    public ResponseEntity<JSONObject> logout(String idUser, String path){
 
         //Logout in member domain
 //        ResponseEntity<?> fromMember = member.logout(idUser);
@@ -95,7 +102,7 @@ public class UserService {
         //Destroy session
         System.out.println("Destroy Session for id :" + idUser);
         sessionService.destroySession(idUser);
-
+//        request.getSession().invalidate();
         //Wrap response
         return ResponseSuccess.wrapResponse(null, DealsStatus.LOGOUT_SUCCESS, path);
 //        return ResponseSuccess.wrap200(null, "You are logged out",
